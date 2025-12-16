@@ -2,7 +2,7 @@ import java.util.Random;
 
 
 public class Symbol {
-    public static double CitronChance = 19.4;
+    public static double CitronChance = 109.4;
     public static double CeriseChance = 19.4;
     public static double TrefleChance = 14.9;
     public static double ClocheChance = 14.9;

@@ -67,7 +67,7 @@ public class SlotMachine {
 
             // --- Vérification des colonnes ---
             for (int j = 0; j < 5; j++) {
-                if (Symbols[0][j].GetNom() == Symbols[1][j].GetNom() && Symbols[0][j].GetNom() == Symbols[2][j].GetNom()) {
+                if (Symbols[0][j].GetSymbolType() == Symbols[1][j].GetSymbolType() && Symbols[0][j].GetSymbolType() == Symbols[2][j].GetSymbolType()) {
                     System.out.println("Une colonne de 3 !");
                     this.AddScore(3*Symbol.getValue(Symbols[0][j].GetSymbolType())*Pattern.GetMultiplier(Pattern.PatternType.vertical3));
                     winningCells[0][j] = true;
@@ -79,11 +79,11 @@ public class SlotMachine {
             // --- Vérification des diagonales et formes spéciales ---
             for (int j = 0; j < 3; j++) {
                 // Diagonale Droite (Haut-Gauche vers Bas-Droite)
-                if (Symbols[0][j].GetNom() == Symbols[1][j+1].GetNom() && Symbols[0][j].GetNom() == Symbols[2][j+2].GetNom()) {
+                if (Symbols[0][j].GetSymbolType() == Symbols[1][j+1].GetSymbolType() && Symbols[0][j].GetSymbolType() == Symbols[2][j+2].GetSymbolType()) {
 
                     // Vérification "Triangle Inversé" ou "V"
-                    if (j == 0 && Symbols[0][j].GetNom() == Symbols[1][3].GetNom() && Symbols[0][j].GetNom() == Symbols[0][4].GetNom()) {
-                        if (Symbols[0][0].GetNom() == Symbols[0][1].GetNom() && Symbols[0][0].GetNom() == Symbols[0][2].GetNom() && Symbols[0][0].GetNom() == Symbols[0][3].GetNom() && Symbols[0][0].GetNom() == Symbols[0][4].GetNom()) {
+                    if (j == 0 && Symbols[0][j].GetSymbolType() == Symbols[1][3].GetSymbolType() && Symbols[0][j].GetSymbolType() == Symbols[0][4].GetSymbolType()) {
+                        if (Symbols[0][0].GetSymbolType() == Symbols[0][1].GetSymbolType() && Symbols[0][0].GetSymbolType() == Symbols[0][2].GetSymbolType() && Symbols[0][0].GetSymbolType() == Symbols[0][3].GetSymbolType() && Symbols[0][0].GetSymbolType() == Symbols[0][4].GetSymbolType()) {
                             System.out.println("Triangle Inverse !");
                             this.AddScore(8*Symbol.getValue(Symbols[0][j].GetSymbolType())*Pattern.GetMultiplier(Pattern.PatternType.triangle));
                             // Tout le triangle
@@ -100,20 +100,22 @@ public class SlotMachine {
                             winningCells[0][4] = true;
                         }
                     } else {
-                        System.out.println("Une diagonale droite !");
-                        this.AddScore(3*Symbol.getValue(Symbols[0][j].GetSymbolType())*Pattern.GetMultiplier(Pattern.PatternType.diagonal));
-                        markWinDiagonalRight(j);
+                        if (j!=2 || (Symbols[0][2].GetSymbolType() != Symbols[1][1].GetSymbolType() && Symbols[0][2].GetSymbolType() != Symbols[2][0].GetSymbolType())) {
+                            System.out.println("Une diagonale droite !");
+                            this.AddScore(3*Symbol.getValue(Symbols[0][j].GetSymbolType())*Pattern.GetMultiplier(Pattern.PatternType.diagonal));
+                            markWinDiagonalRight(j);
+                        }
                     }
                 }
 
                 // Diagonale Gauche (Bas-Gauche vers Haut-Droite ou inversement selon l'implémentation)
                 // Note: Ton code original utilise `4-j`, donc on part de la droite vers la gauche
-                if (Symbols[0][4-j].GetNom() == Symbols[1][3-j].GetNom() && Symbols[0][4-j].GetNom() == Symbols[2][2-j].GetNom()) {
+                if (Symbols[0][4-j].GetSymbolType() == Symbols[1][3-j].GetSymbolType() && Symbols[0][4-j].GetSymbolType() == Symbols[2][2-j].GetSymbolType()) {
 
                     // Vérification "Triangle" ou "^"
-                    if (j == 2 && Symbols[0][2].GetNom() == Symbols[1][3].GetNom() && Symbols[0][2].GetNom() == Symbols[2][4].GetNom()) {
+                    if (j == 2 && Symbols[0][2].GetSymbolType() == Symbols[1][3].GetSymbolType() && Symbols[0][2].GetSymbolType() == Symbols[2][4].GetSymbolType()) {
                         // Note: la logique originale ici semble complexe, je simplifie pour marquer les cases impliquées
-                        if (Symbols[2][0].GetNom() == Symbols[2][1].GetNom() && Symbols[2][0].GetNom() == Symbols[2][2].GetNom() && Symbols[2][0].GetNom() == Symbols[2][3].GetNom() && Symbols[2][0].GetNom() == Symbols[2][4].GetNom()) {
+                        if (Symbols[2][0].GetSymbolType() == Symbols[2][1].GetSymbolType() && Symbols[2][0].GetSymbolType() == Symbols[2][2].GetSymbolType() && Symbols[2][0].GetSymbolType() == Symbols[2][3].GetSymbolType() && Symbols[2][0].GetSymbolType() == Symbols[2][4].GetSymbolType()) {
                             System.out.println("Triangle !");
                             this.AddScore(8*Symbol.getValue(Symbols[0][j].GetSymbolType())*Pattern.GetMultiplier(Pattern.PatternType.triangle));
                             markWinDiagonalLeft(j);

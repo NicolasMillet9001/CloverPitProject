@@ -60,12 +60,12 @@ public class Symbol {
         return EnumSymbolType.Sept; // Retourne 7 si aucune condition n'est remplie
     }
 
-    public EnumSymbolType GetNom() {
+    public EnumSymbolType GetSymbolType() {
         return this.nom;
     }
 
     public void Affiche(){
-        System.out.printf(GetNom()+" ");
+        System.out.printf(GetSymbolType()+" ");
     }
 
     public static double getChance(EnumSymbolType symbol) {

@@ -2,16 +2,29 @@ import java.util.Random;
 
 public class SlotMachine {
 
-    private Symbol[][] Symbols = new Symbol[3][5];
-    // Ce tableau va stocker 'true' pour les cases qui font partie d'une combinaison gagnante
+    private Symbol[][] Symbols =  new Symbol[3][5];
     private boolean[][] winningCells = new boolean[3][5];
+    private double score = 0;
+    
+    public double GetScore(){
+        return score;
+    }
+    
+    public void SetScore(double score){
+        this.score = score;
+    }
+    
+    public void AddScore(double score){
+        this.score += score;
+    }
+    
+    public void SubstractScore(double score){
+        this.score -= score;
+    }
 
-    public SlotMachine() {
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 5; j++) {
-                Symbols[i][j] = new Symbol();
-            }
-        }
+    public SlotMachine()
+    {
+        spin();
     }
 
     public void spin() {
@@ -28,24 +41,24 @@ public class SlotMachine {
             // --- Vérification des lignes ---
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++) {
-                    if (Symbols[i][j].GetNom() == Symbols[i][j+1].GetNom() && Symbols[i][j].GetNom() == Symbols[i][j+2].GetNom()) {
-                        // Vérifie que la ligne n'a pas déjà été comptée (pour éviter de compter une ligne de 4 comme une ligne de 3 + une autre)
-                        if (j == 0 || Symbols[i][j].GetNom() != Symbols[i][j-1].GetNom()) {
+                    if (Symbols[i][j].GetSymbolType() == Symbols[i][j+1].GetSymbolType() &&  Symbols[i][j].GetSymbolType() == Symbols[i][j+2].GetSymbolType()) {
+                        if (j==0 || Symbols[i][j].GetSymbolType() != Symbols[i][j-1].GetSymbolType()){ // Vérifie que la ligne n'a pas déjà été comptée
+                            if (j<2 && Symbols[i][j].GetSymbolType() == Symbols[i][j+3].GetSymbolType()) {
+                                if (j==0 && Symbols[i][j].GetSymbolType() == Symbols[i][j+4].GetSymbolType()) {
+                                    System.out.println("Une ligne de 5 !");
+                                    this.AddScore(5*Symbol.getValue(Symbols[i][j].GetSymbolType())*Pattern.GetMultiplier(Pattern.PatternType.horizontal5));
+                                    markWinRow(i, j, 5);
 
-                            // Ligne de 5 ?
-                            if (j == 0 && Symbols[i][j].GetNom() == Symbols[i][j+3].GetNom() && Symbols[i][j].GetNom() == Symbols[i][j+4].GetNom()) {
-                                System.out.println("Une ligne de 5 !");
-                                markWinRow(i, j, 5);
-                            }
-                            // Ligne de 4 ?
-                            else if (j < 2 && Symbols[i][j].GetNom() == Symbols[i][j+3].GetNom()) {
-                                System.out.println("Une ligne de 4 !");
-                                markWinRow(i, j, 4);
-                            }
-                            // Ligne de 3 standard
-                            else {
+                                }else{
+                                    System.out.println("Une ligne de 4 !");
+                                    this.AddScore(4*Symbol.getValue(Symbols[i][j].GetSymbolType())*Pattern.GetMultiplier(Pattern.PatternType.horizontal4));
+                                    markWinRow(i, j, 4);
+
+                                }
+                            }else{
                                 System.out.println("Une ligne de 3 !");
-                                markWinRow(i, j, 3);
+                                this.AddScore(3*Symbol.getValue(Symbols[i][j].GetSymbolType())*Pattern.GetMultiplier(Pattern.PatternType.horizontal3));
+								markWinRow(i, j, 3);
                             }
                         }
                     }
@@ -56,6 +69,7 @@ public class SlotMachine {
             for (int j = 0; j < 5; j++) {
                 if (Symbols[0][j].GetNom() == Symbols[1][j].GetNom() && Symbols[0][j].GetNom() == Symbols[2][j].GetNom()) {
                     System.out.println("Une colonne de 3 !");
+                    this.AddScore(3*Symbol.getValue(Symbols[0][j].GetSymbolType())*Pattern.GetMultiplier(Pattern.PatternType.vertical3));
                     winningCells[0][j] = true;
                     winningCells[1][j] = true;
                     winningCells[2][j] = true;
@@ -71,6 +85,7 @@ public class SlotMachine {
                     if (j == 0 && Symbols[0][j].GetNom() == Symbols[1][3].GetNom() && Symbols[0][j].GetNom() == Symbols[0][4].GetNom()) {
                         if (Symbols[0][0].GetNom() == Symbols[0][1].GetNom() && Symbols[0][0].GetNom() == Symbols[0][2].GetNom() && Symbols[0][0].GetNom() == Symbols[0][3].GetNom() && Symbols[0][0].GetNom() == Symbols[0][4].GetNom()) {
                             System.out.println("Triangle Inverse !");
+                            this.AddScore(8*Symbol.getValue(Symbols[0][j].GetSymbolType())*Pattern.GetMultiplier(Pattern.PatternType.triangle));
                             // Tout le triangle
                             markWinDiagonalRight(j);
                             winningCells[1][3] = true;
@@ -79,12 +94,14 @@ public class SlotMachine {
                             markWinRow(0, 0, 5);
                         } else {
                             System.out.println("Un V !");
+                            this.AddScore(5*Symbol.getValue(Symbols[0][j].GetSymbolType())*Pattern.GetMultiplier(Pattern.PatternType.zigzag));
                             markWinDiagonalRight(j); // 0,0 - 1,1 - 2,2
                             winningCells[1][3] = true;
                             winningCells[0][4] = true;
                         }
                     } else {
                         System.out.println("Une diagonale droite !");
+                        this.AddScore(3*Symbol.getValue(Symbols[0][j].GetSymbolType())*Pattern.GetMultiplier(Pattern.PatternType.diagonal));
                         markWinDiagonalRight(j);
                     }
                 }
@@ -98,12 +115,14 @@ public class SlotMachine {
                         // Note: la logique originale ici semble complexe, je simplifie pour marquer les cases impliquées
                         if (Symbols[2][0].GetNom() == Symbols[2][1].GetNom() && Symbols[2][0].GetNom() == Symbols[2][2].GetNom() && Symbols[2][0].GetNom() == Symbols[2][3].GetNom() && Symbols[2][0].GetNom() == Symbols[2][4].GetNom()) {
                             System.out.println("Triangle !");
+                            this.AddScore(8*Symbol.getValue(Symbols[0][j].GetSymbolType())*Pattern.GetMultiplier(Pattern.PatternType.triangle));
                             markWinDiagonalLeft(j);
                             winningCells[1][3] = true;
                             winningCells[2][4] = true; // Ajusté selon logique probable
                             markWinRow(2, 0, 5); // Base du triangle
                         } else {
                             System.out.println("Un ^ !");
+                            this.AddScore(5*Symbol.getValue(Symbols[0][4-j].GetSymbolType())*Pattern.GetMultiplier(Pattern.PatternType.zigzag));
                             markWinDiagonalLeft(j);
                             // On marque les extensions du chapeau
                             winningCells[1][3] = true;
@@ -111,6 +130,7 @@ public class SlotMachine {
                         }
                     } else {
                         System.out.println("Une diagonale gauche !");
+                        this.AddScore(3*Symbol.getValue(Symbols[0][4-j].GetSymbolType())*Pattern.GetMultiplier(Pattern.PatternType.diagonal));
                         markWinDiagonalLeft(j);
                     }
                 }
@@ -120,7 +140,7 @@ public class SlotMachine {
             boolean jackpot = true;
             for (int i = 0; i < 3 && jackpot; i++) {
                 for (int j = 0; j < 5; j++) {
-                    if (Symbols[0][0].GetNom() != Symbols[i][j].GetNom()) {
+                    if (Symbols[0][0].GetSymbolType() != Symbols[i][j].GetSymbolType()){
                         jackpot = false;
                         break;
                     }
@@ -128,11 +148,13 @@ public class SlotMachine {
             }
             if (jackpot) {
                 System.out.println("Jackpot !");
-                for(int i=0; i<3; i++) for(int k=0; k<5; k++) winningCells[i][k] = true;
+                this.AddScore(15*Symbol.getValue(Symbols[0][0].GetSymbolType())*Pattern.GetMultiplier(Pattern.PatternType.jackpot));
+				for(int i=0; i<3; i++) for(int k=0; k<5; k++) winningCells[i][k] = true;
             }
 
-        } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Score : "+GetScore());
+        }catch(Exception e){
+            System.out.println(e);
         }
     }
 

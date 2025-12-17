@@ -11,92 +11,149 @@ public class SlotMachineGUI extends JFrame {
     private SymbolManager symbolManager;
     private BufferedImage backgroundImage;
 
-    // --- NOUVEAUX CHAMPS POUR L'ANIMATION ---
-    private Timer animationTimer; // Le chrono qui fait changer les images
-    private boolean isSpinning = false; // Pour savoir si ça tourne
-    private long spinStartTime; // Pour mesurer les 2 secondes
-    private Symbol[][] tempGrid; // Grille temporaire pour l'effet visuel
+    // Composants GUI
+    private JPanel mainContainer; // Le panel qui change (CardLayout)
+    private CardLayout cardLayout;
+    private JButton spinButton; // On le garde en attribut pour pouvoir le désactiver
+    private JButton infoButton;
+
+    // Animation vars
+    private Timer animationTimer;
+    private boolean isSpinning = false;
+    private long spinStartTime;
+    private Symbol[][] tempGrid;
+
+    // Noms des écrans pour le CardLayout
+    private final String CARD_GAME = "GAME";
+    private final String CARD_INFO = "INFO";
+    private boolean isInfoScreenVisible = false;
 
     public SlotMachineGUI() {
-        // Initialise la machine à sous et le gestionnaire de symboles
         slotMachine = new SlotMachine();
         symbolManager = new SymbolManager();
-
-        // On initialise une grille temporaire vide pour commencer
         tempGrid = new Symbol[3][5];
 
-        // Charge l'image de fond
         try {
             backgroundImage = ImageIO.read(Objects.requireNonNull(getClass().getResource("/medias/SlotScreen.png")));
         } catch (IOException | NullPointerException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Impossible de charger l'image de fond.", "Erreur", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Erreur chargement fond.", "Erreur", JOptionPane.ERROR_MESSAGE);
         }
 
-        // Configuration de la fenêtre
         setTitle("Slot Machine");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setSize(800, 600);
         setLocationRelativeTo(null);
-        // setResizable(false); // Souvent mieux pour les jeux à fond fixe
 
-        // --- CONFIGURATION DU TIMER D'ANIMATION ---
-        // 60ms = Vitesse de défilement (effet Mario Kart rapide)
         animationTimer = new Timer(60, e -> updateAnimation());
 
-        // Bouton pour faire tourner
-        JButton spinButton = new JButton("SPIN !");
+        // --- 1. CONFIGURATION DU CARD LAYOUT (Le cœur du changement) ---
+        cardLayout = new CardLayout();
+        mainContainer = new JPanel(cardLayout);
+
+        // Création des deux écrans
+        JPanel gamePanel = new SlotMachinePanel();
+        JPanel infoPanel = new InfoPanel(symbolManager); // Notre nouvelle classe InfoPanel
+
+        // Ajout au container
+        mainContainer.add(gamePanel, CARD_GAME);
+        mainContainer.add(infoPanel, CARD_INFO);
+
+        // --- 2. BARRE DE BOUTONS ---
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setBackground(Color.BLACK);
+        buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10));
+
+        // Bouton SPIN
+        spinButton = new JButton("SPIN !");
+        spinButton.setPreferredSize(new Dimension(150, 50));
         spinButton.setFont(new Font("Arial", Font.BOLD, 20));
         spinButton.setBackground(new Color(50, 205, 50));
         spinButton.setForeground(Color.WHITE);
         spinButton.setFocusPainted(false);
         spinButton.addActionListener(e -> startSpin());
 
-        // --- GESTION DE LA TOUCHE ESPACE ---
-        // On utilise InputMap/ActionMap qui est plus robuste que KeyListener pour Swing
-        JPanel mainPanel = new SlotMachinePanel();
-        InputMap im = mainPanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
-        ActionMap am = mainPanel.getActionMap();
+        // Bouton INFO (Toggle)
+        infoButton = new JButton("?");
+        infoButton.setPreferredSize(new Dimension(50, 50));
+        infoButton.setFont(new Font("Arial", Font.BOLD, 20));
+        infoButton.setBackground(new Color(70, 130, 180));
+        infoButton.setForeground(Color.WHITE);
+        infoButton.setFocusPainted(false);
 
+        infoButton.addActionListener(e -> toggleInfoScreen());
+
+        buttonPanel.add(spinButton);
+        buttonPanel.add(infoButton);
+
+        // --- 3. INPUT MAP (ESPACE) ---
+        InputMap im = mainContainer.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        ActionMap am = mainContainer.getActionMap();
         im.put(KeyStroke.getKeyStroke("SPACE"), "spinAction");
         am.put("spinAction", new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                startSpin();
+                // On ne spin que si on est sur l'écran de jeu
+                if (!isInfoScreenVisible) {
+                    startSpin();
+                }
             }
         });
 
-        // Ajout des composants
-        add(mainPanel, BorderLayout.CENTER);
-        add(spinButton, BorderLayout.SOUTH);
+        // Assemblage final
+        add(mainContainer, BorderLayout.CENTER);
+        add(buttonPanel, BorderLayout.SOUTH);
     }
 
-    // --- LOGIQUE D'ANIMATION ---
+    // --- Gestion du changement d'écran ---
+    // Il faut que ton attribut infoPanel soit accessible ici.
+    // Dans le constructeur, tu as fait "JPanel infoPanel = ...".
+    // Transforme-le en attribut de classe "private InfoPanel infoPanel;" tout en haut.
 
+    private void toggleInfoScreen() {
+        if (isInfoScreenVisible) {
+            // Retour au jeu
+            cardLayout.show(mainContainer, CARD_GAME);
+            infoButton.setText("?");
+            infoButton.setBackground(new Color(70, 130, 180));
+            spinButton.setEnabled(true);
+            isInfoScreenVisible = false;
+            mainContainer.requestFocusInWindow();
+        } else {
+            // ALLER AUX INFOS
+
+            // C'EST ICI LA CLÉ : On demande au panel de se mettre à jour
+            // Il va relire les variables statiques de Symbol (chances, valeurs)
+            // et redessiner le tableau.
+            ((InfoPanel) mainContainer.getComponent(1)).updateInfo();
+            // Note: le cast (InfoPanel) est nécessaire si tu l'as stocké comme JPanel
+
+            cardLayout.show(mainContainer, CARD_INFO);
+            infoButton.setText("X");
+            infoButton.setBackground(new Color(200, 50, 50));
+            spinButton.setEnabled(false);
+            isInfoScreenVisible = true;
+        }
+    }
+
+    // --- LOGIQUE ANIMATION (Reste identique) ---
     private void startSpin() {
-        if (isSpinning) return; // On empêche de relancer si ça tourne déjà
-
+        if (isSpinning) return;
         isSpinning = true;
         spinStartTime = System.currentTimeMillis();
-        animationTimer.start(); // Lance le défilement visuel
+        animationTimer.start();
     }
 
     private void updateAnimation() {
         long currentTime = System.currentTimeMillis();
-
-        // Si moins de 0.75s (750ms) se sont écoulées
         if (currentTime - spinStartTime < 750) {
-            // On remplit la grille temporaire avec du "bruit" aléatoire
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 5; j++) {
-                    // On crée un nouveau symbole juste pour l'affichage (visuel uniquement)
                     tempGrid[i][j] = new Symbol();
                 }
             }
-            repaint(); // On redessine l'interface avec ces symboles temporaires
-        }
-        else {
-            // Les 2 secondes sont finies : ON ARRÊTE TOUT ET ON DONNE LE VRAI RÉSULTAT
+            mainContainer.repaint(); // Important : repaint le container principal
+        } else {
             stopSpin();
         }
     }
@@ -104,17 +161,12 @@ public class SlotMachineGUI extends JFrame {
     private void stopSpin() {
         animationTimer.stop();
         isSpinning = false;
-
-        // C'est ICI que le vrai calcul mathématique se fait (crédits, gains, etc.)
         slotMachine.spin();
-
-        repaint(); // On redessine une dernière fois avec la vraie grille fixe
+        mainContainer.repaint();
     }
 
-    // --- Panneau personnalisé pour dessiner la machine à sous ---
+    // --- CLASSE INTERNE SLOTMACHINEPANEL (Reste identique) ---
     private class SlotMachinePanel extends JPanel {
-
-        // --- TES CONSTANTES DE CALIBRAGE ---
         private static final double REF_SCREEN_W = 800.0;
         private static final double REF_SCREEN_H = 600.0;
         private static final double REF_START_X = 133.0;
@@ -127,11 +179,12 @@ public class SlotMachineGUI extends JFrame {
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
+            Graphics2D g2d = (Graphics2D) g;
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
             int panelWidth = getWidth();
             int panelHeight = getHeight();
 
-            // 1. Fond
             if (backgroundImage != null) {
                 g.drawImage(backgroundImage, 0, 0, panelWidth, panelHeight, this);
             } else {
@@ -139,35 +192,25 @@ public class SlotMachineGUI extends JFrame {
                 g.fillRect(0, 0, panelWidth, panelHeight);
             }
 
-            // 2. Facteurs d'échelle
             double scaleX = (double) panelWidth / REF_SCREEN_W;
             double scaleY = (double) panelHeight / REF_SCREEN_H;
             int actualSymbolW = (int) (REF_SYMBOL_W * scaleX);
             int actualSymbolH = (int) (REF_SYMBOL_H * scaleY);
 
-            // 3. Choix de la grille à afficher
             Symbol[][] gridToDraw;
+            boolean[][] winners = null;
 
             if (isSpinning) {
-                // Si ça tourne, on dessine la grille temporaire (effet Mario Kart)
                 gridToDraw = tempGrid;
             } else {
-                // Si c'est arrêté, on dessine la vraie grille de la machine (résultat final)
                 gridToDraw = slotMachine.getSymbols();
+                winners = slotMachine.getWinningCells();
             }
 
-            // Si la grille est vide (au tout premier lancement), on évite le crash
-            if (gridToDraw[0][0] == null && !isSpinning) {
-                // Optionnel : on pourrait forcer un spin initial ou laisser vide
-                // Ici on laisse vide ou on dessine rien
-                return;
-            }
+            if (gridToDraw[0][0] == null && !isSpinning) return;
 
-            // 4. Boucle d'affichage
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 5; j++) {
-
-                    // Sécurité supplémentaire si la grille n'est pas init
                     if (gridToDraw[i][j] == null) continue;
 
                     double refX = REF_START_X + (j * REF_STEP_X);
@@ -185,6 +228,13 @@ public class SlotMachineGUI extends JFrame {
                     } else {
                         g.setColor(Color.RED);
                         g.drawRect(finalX, finalY, actualSymbolW, actualSymbolH);
+                    }
+
+                    if (!isSpinning && winners != null && winners[i][j]) {
+                        g2d.setColor(new Color(255, 215, 0));
+                        g2d.setStroke(new BasicStroke((float)(5 * scaleX)));
+                        int margin = (int)(5 * scaleX);
+                        g2d.drawRect(finalX - margin, finalY - margin, actualSymbolW + (margin*2), actualSymbolH + (margin*2));
                     }
                 }
             }

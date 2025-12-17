@@ -2,7 +2,7 @@ import java.util.Random;
 
 
 public class Symbol {
-    public static double CitronChance = 109.4;
+    public static double CitronChance = 19.4;
     public static double CeriseChance = 19.4;
     public static double TrefleChance = 14.9;
     public static double ClocheChance = 14.9;
@@ -60,12 +60,12 @@ public class Symbol {
         return EnumSymbolType.Sept; // Retourne 7 si aucune condition n'est remplie
     }
 
-    public EnumSymbolType GetNom() {
+    public EnumSymbolType GetSymbolType() {
         return this.nom;
     }
 
     public void Affiche(){
-        System.out.printf(GetNom()+" ");
+        System.out.printf(GetSymbolType()+" ");
     }
 
     public static double getChance(EnumSymbolType symbol) {

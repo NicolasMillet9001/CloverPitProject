@@ -177,7 +177,7 @@ public class SlotMachineGUI extends JFrame {
                     int finalY = (int) (refY * scaleY);
 
                     Symbol symbol = gridToDraw[i][j];
-                    String nomSymbole = symbol.GetNom().toString();
+                    String nomSymbole = symbol.GetSymbolType().toString();
                     BufferedImage symbolImage = symbolManager.getSymbolImage(nomSymbole);
 
                     if (symbolImage != null) {

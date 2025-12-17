@@ -185,11 +185,11 @@ public class InfoPanel extends JPanel {
         }
         iconLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-        JLabel val = new JLabel(String.valueOf((int)Symbol.getValue(type)) + " $", SwingConstants.CENTER);
+        JLabel val = new JLabel(String.valueOf((int)Symbol.GetValue(type)) + " $", SwingConstants.CENTER);
         val.setForeground(new Color(255, 215, 0));
         textLabels.add(val);
 
-        JLabel chance = new JLabel(String.format("%.1f%%", Symbol.getChance(type)), SwingConstants.CENTER);
+        JLabel chance = new JLabel(String.format("%.1f%%", Symbol.GetChance(type)), SwingConstants.CENTER);
         chance.setForeground(Color.WHITE);
         textLabels.add(chance);
 

@@ -6,8 +6,10 @@ import java.util.Map;
 
 public class SymbolManager {
     private Map<String, BufferedImage> symbolImages;
+    private String basePath;
 
-    public SymbolManager() {
+    public SymbolManager(String basePath) {
+        this.basePath = basePath;
         symbolImages = new HashMap<>();
         loadSymbolImages();
     }
@@ -15,16 +17,38 @@ public class SymbolManager {
     // Charge les images des symboles
     private void loadSymbolImages() {
         try {
-            symbolImages.put("Citron", ImageIO.read(getClass().getResource("medias/symbols/SymbolLemon.png")));
-            symbolImages.put("Cerise", ImageIO.read(getClass().getResource("medias/symbols/SymbolCherry.png")));
-            symbolImages.put("Trefle", ImageIO.read(getClass().getResource("medias/symbols/SymbolClover.png")));
-            symbolImages.put("Cloche", ImageIO.read(getClass().getResource("medias/symbols/SymbolBell.png")));
-            symbolImages.put("Diamant", ImageIO.read(getClass().getResource("medias/symbols/SymbolDiamond.png")));
-            symbolImages.put("Coffre", ImageIO.read(getClass().getResource("medias/symbols/SymbolChest.png")));
-            symbolImages.put("Sept", ImageIO.read(getClass().getResource("medias/symbols/SymbolSeven.png")));
+            // Ensure basePath ends with / if not empty and not just /
+            String pathPrefix = basePath;
+            if (!pathPrefix.endsWith("/")) {
+                pathPrefix += "/";
+            }
+            // Remove leading slash if present for getResource
+            if (pathPrefix.startsWith("/")) {
+                pathPrefix = pathPrefix.substring(1);
+            }
+
+            // Note: We use pathPrefix which is relative to classpath root (src)
+            // The originals were "medias/symbols/..."
+            // The new ones will be passed in like "/medias/symbols_slot" or
+            // "/medias/symbols_panel"
+
+            String[] symbolsFull = { "SymbolLemon.png", "SymbolCherry.png", "SymbolClover.png", "SymbolBell.png",
+                    "SymbolDiamond.png", "SymbolChest.png", "SymbolSeven.png", "Coin.png" };
+            String[] commonNames = { "Citron", "Cerise", "Trefle", "Cloche", "Diamant", "Coffre", "Sept", "Coin" };
+
+            for (int i = 0; i < symbolsFull.length; i++) {
+                String resourcePath = "/" + pathPrefix + symbolsFull[i];
+                var resource = getClass().getResource(resourcePath);
+                if (resource != null) {
+                    symbolImages.put(commonNames[i], ImageIO.read(resource));
+                } else {
+                    System.err.println("Image introuvable : " + resourcePath);
+                }
+            }
             // Ajoute les autres symboles
-        } catch (IOException e) {
+        } catch (IOException | NullPointerException e) {
             e.printStackTrace();
+            System.err.println("Erreur chargement images depuis: " + basePath);
         }
     }
 

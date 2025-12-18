@@ -5,7 +5,7 @@ public class Pattern {
     public static double horizontal4mult = 2;
     public static double horizontal5mult = 3;
     public static double zigzagmult = 4;
-    public static double trianglemult = 4;
+    public static double trianglemult = 7;
     public static double jackpotmult = 10;
 
 

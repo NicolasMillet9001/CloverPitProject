@@ -1,0 +1,312 @@
+[
+  {
+    "nom": "Amélioration de chances de cerises",
+    "description": "Augmente les chances d'obtenir des cerises de 100%",
+    "quality": 2,
+    "basePrice": 100,
+    "itemType": "SymbolChanceModifier",
+    "targetStats": [
+      "CeriseLuck"
+    ],
+    "StatsModifiers": [
+      2
+    ],
+    "unique": "false"
+  },
+  {
+    "nom": "Amélioration de la valeur des cerises",
+    "description": "Augmente la valeur des cerises de 100%",
+    "quality": 3,
+    "basePrice": 200,
+    "itemType": "SymbolValueModifier",
+    "targetStats": [
+      "CeriseValue"
+    ],
+    "StatsModifiers": [
+      2
+    ],
+    "unique": "false"
+  },
+  {
+    "nom": "Amélioration de chances de cloches",
+    "description": "Augmente les chances d'obtenir des cloches de 100%",
+    "quality": 2,
+    "basePrice": 100,
+    "itemType": "SymbolChanceModifier",
+    "targetStats": [
+      "ClocheLuck"
+    ],
+    "StatsModifiers": [
+      2
+    ],
+    "unique": "false"
+  },
+  {
+    "nom": "Amélioration de la valeur des cloches",
+    "description": "Augmente la valeur des cloches de 100%",
+    "quality": 3,
+    "basePrice": 200,
+    "itemType": "SymbolValueModifier",
+    "targetStats": [
+      "ClocheValue"
+    ],
+    "StatsModifiers": [
+      2
+    ],
+    "unique": "false"
+  },
+  {
+    "nom": "Amélioration de chances de trèfles",
+    "description": "Augmente les chances d'obtenir des trèfles de 100%",
+    "quality": 2,
+    "basePrice": 100,
+    "itemType": "SymbolChanceModifier",
+    "targetStats": [
+      "TrefleLuck"
+    ],
+    "StatsModifiers": [
+      2
+    ],
+    "unique": "false"
+  },
+  {
+    "nom": "Amélioration de la valeur des trèfles",
+    "description": "Augmente la valeur des trèfles de 100%",
+    "quality": 3,
+    "basePrice": 200,
+    "itemType": "SymbolValueModifier",
+    "targetStats": [
+      "TrefleValue"
+    ],
+    "StatsModifiers": [
+      2
+    ],
+    "unique": "false"
+  },
+  {
+    "nom": "Amélioration de chances de coffres",
+    "description": "Augmente les chances d'obtenir des coffres de 100%",
+    "quality": 2,
+    "basePrice": 100,
+    "itemType": "SymbolChanceModifier",
+    "targetStats": [
+      "CoffreLuck"
+    ],
+    "StatsModifiers": [
+      2
+    ],
+    "unique": "false"
+  },
+  {
+    "nom": "Amélioration de la valeur des coffres",
+    "description": "Augmente la valeur des coffres de 100%",
+    "quality": 3,
+    "basePrice": 200,
+    "itemType": "SymbolValueModifier",
+    "targetStats": [
+      "CoffreValue"
+    ],
+    "StatsModifiers": [
+      2
+    ],
+    "unique": "false"
+  },
+  {
+    "nom": "Amélioration de chances de diamants",
+    "description": "Augmente les chances d'obtenir des diamants de 100%",
+    "quality": 2,
+    "basePrice": 100,
+    "itemType": "SymbolChanceModifier",
+    "targetStats": [
+      "DiamantLuck"
+    ],
+    "StatsModifiers": [
+      2
+    ],
+    "unique": "false"
+  },
+  {
+    "nom": "Amélioration de la valeur des diamants",
+    "description": "Augmente la valeur des diamants de 100%",
+    "quality": 3,
+    "basePrice": 200,
+    "itemType": "SymbolValueModifier",
+    "targetStats": [
+      "DiamantValue"
+    ],
+    "StatsModifiers": [
+      2
+    ],
+    "unique": "false"
+  },
+  {
+    "nom": "Amélioration de chances de septs",
+    "description": "Augmente les chances d'obtenir des septs de 100%",
+    "quality": 2,
+    "basePrice": 100,
+    "itemType": "SymbolChanceModifier",
+    "targetStats": [
+      "SeptLuck"
+    ],
+    "StatsModifiers": [
+      2
+    ],
+    "unique": "false"
+  },
+  {
+    "nom": "Amélioration de la valeur des septs",
+    "description": "Augmente la valeur des septs de 100%",
+    "quality": 3,
+    "basePrice": 200,
+    "itemType": "SymbolValueModifier",
+    "targetStats": [
+      "SeptValue"
+    ],
+    "StatsModifiers": [
+      2
+    ],
+    "unique": "false"
+  },
+  {
+    "nom": "Amélioration de la valeur de tous les symboles",
+    "description": "Augmente la valeur des symboles de 100%",
+    "quality": 4,
+    "basePrice": 500,
+    "itemType": "SymbolGlobalValueModifier",
+    "targetStats": [
+      "GlobalValue"
+    ],
+    "StatsModifiers": [
+      2
+    ],
+    "unique": "false"
+  },
+  {
+    "nom": "Amélioration du multiplicateur des lignes horizontales de 3",
+    "description": "Augmente la valeur des lignes horizontales de 3 de 100%",
+    "quality": 1,
+    "basePrice": 50,
+    "itemType": "PatternMultiplierModifier",
+    "targetStats": [
+      "Horizontal3Mult"
+    ],
+    "StatsModifiers": [
+      2
+    ],
+    "unique": "false"
+  },
+  {
+    "nom": "Amélioration du multiplicateur des lignes horizontales de 4",
+    "description": "Augmente la valeur des lignes horizontales de 4 de 100%",
+    "quality": 1,
+    "basePrice": 50,
+    "itemType": "PatternMultiplierModifier",
+    "targetStats": [
+      "Horizontal4Mult"
+    ],
+    "StatsModifiers": [
+      2
+    ],
+    "unique": "false"
+  },
+  {
+    "nom": "Amélioration du multiplicateur des lignes horizontales de 5",
+    "description": "Augmente la valeur des lignes horizontales de 5 de 100%",
+    "quality": 1,
+    "basePrice": 50,
+    "itemType": "PatternMultiplierModifier",
+    "targetStats": [
+      "Horizontal5Mult"
+    ],
+    "StatsModifiers": [
+      2
+    ],
+    "unique": "false"
+  },
+  {
+    "nom": "Amélioration du multiplicateur des colonnes",
+    "description": "Augmente la valeur des colonnes de 100%",
+    "quality": 1,
+    "basePrice": 50,
+    "itemType": "PatternMultiplierModifier",
+    "targetStats": [
+      "Vertical3Mult"
+    ],
+    "StatsModifiers": [
+      2
+    ],
+    "unique": "false"
+  },
+  {
+    "nom": "Amélioration du multiplicateur des diagonales",
+    "description": "Augmente la valeur des diagonales de 100%",
+    "quality": 1,
+    "basePrice": 50,
+    "itemType": "PatternMultiplierModifier",
+    "targetStats": [
+      "DiagonalMult"
+    ],
+    "StatsModifiers": [
+      2
+    ],
+    "unique": "false"
+  },
+  {
+    "nom": "Amélioration du multiplicateur des zigzag",
+    "description": "Augmente la valeur des zigzag de 100%",
+    "quality": 1,
+    "basePrice": 50,
+    "itemType": "PatternMultiplierModifier",
+    "targetStats": [
+      "ZigzagMult"
+    ],
+    "StatsModifiers": [
+      2
+    ],
+    "unique": "false"
+  },
+  {
+    "nom": "Amélioration du multiplicateur des triangles",
+    "description": "Augmente la valeur des triangles de 100%",
+    "quality": 1,
+    "basePrice": 50,
+    "itemType": "PatternMultiplierModifier",
+    "targetStats": [
+      "TriangleMult"
+    ],
+    "StatsModifiers": [
+      2
+    ],
+    "unique": "false"
+  },
+  {
+    "nom": "Amélioration du multiplicateur du jackpot",
+    "description": "Augmente la valeur du jackpot de 100%",
+    "quality": 1,
+    "basePrice": 50,
+    "itemType": "PatternMultiplierModifier",
+    "targetStats": [
+      "JackpotMult"
+    ],
+    "StatsModifiers": [
+      2
+    ],
+    "unique": "false"
+  },
+  {
+    "nom": "Amélioration du multiplicateur de tous les patterns",
+    "description": "Augmente le multiplicateur des patterns de 100%",
+    "quality": 4,
+    "basePrice": 500,
+    "itemType": "PatternGlobalMultiplierModifier",
+    "targetStats": [
+      "GlobalMult"
+    ],
+    "StatsModifiers": [
+      2
+    ],
+    "unique": "false"
+  }
+
+
+]

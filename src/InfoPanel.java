@@ -266,7 +266,7 @@ public class InfoPanel extends JPanel {
         // The original code added 'val' to 'textLabels' for scaling.
         textLabels.add(val);
 
-        JLabel chance = new JLabel(String.format("%.1f%%", Symbol.getChance(type)), SwingConstants.CENTER);
+        JLabel chance = new JLabel(String.format("%.1f%%", Symbol.GetChance(type)), SwingConstants.CENTER);
         chance.setForeground(Color.WHITE);
         textLabels.add(chance);
 

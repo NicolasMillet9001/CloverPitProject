@@ -18,6 +18,9 @@ public class Symbol {
     public static double CoffreValue = 5;
     public static double SeptValue = 7;
 
+    public static double SymbolGlobalValueMultiplier = 1;
+
+
     public enum EnumSymbolType {
         Citron,
         Cerise,
@@ -68,7 +71,7 @@ public class Symbol {
         System.out.printf(GetSymbolType()+" ");
     }
 
-    public static double getChance(EnumSymbolType symbol) {
+    public static double GetChance(EnumSymbolType symbol) {
         switch (symbol) {
             case Citron: return CitronChance;
             case Cerise: return CeriseChance;
@@ -81,7 +84,7 @@ public class Symbol {
         }
     }
 
-    public static double getValue(EnumSymbolType symbol) {
+    public static double GetValue(EnumSymbolType symbol) {
         switch (symbol) {
             case Citron: return CitronValue;
             case Cerise: return CeriseValue;
@@ -94,7 +97,7 @@ public class Symbol {
         }
     }
 
-    public static void setChance(EnumSymbolType symbol, double chance) {
+    public static void SetChance(EnumSymbolType symbol, double chance) {
         switch (symbol) {
             case Citron: CitronChance = chance; break;
             case Cerise: CeriseChance = chance; break;
@@ -106,7 +109,7 @@ public class Symbol {
         }
     }
 
-    public static void setValue(EnumSymbolType symbol, double value) {
+    public static void SetValue(EnumSymbolType symbol, double value) {
         switch (symbol) {
             case Citron: CitronValue = value; break;
             case Cerise: CeriseValue = value; break;
@@ -116,6 +119,16 @@ public class Symbol {
             case Coffre: CoffreValue = value; break;
             case Sept: SeptValue = value; break;
         }
+    }
+
+    public static double GetSymbolGlobalValueMultiplier() {
+        return SymbolGlobalValueMultiplier;
+    }
+    public static void SetSymbolGlobalValueMultiplier(double multiplier) {
+        SymbolGlobalValueMultiplier = multiplier;
+    }
+    public static void AddSymbolGlobalValueMultiplier(double multiplier) {
+        SymbolGlobalValueMultiplier += multiplier;
     }
 }
 

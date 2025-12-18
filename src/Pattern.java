@@ -8,6 +8,8 @@ public class Pattern {
     public static double trianglemult = 7;
     public static double jackpotmult = 10;
 
+    public static double PatternGlobalMultiplier = 1;
+
 
     public enum PatternType{
         horizontal3,
@@ -72,5 +74,15 @@ public class Pattern {
             default:
                 return;
         }
+    }
+
+    public static double GetGlobalMultiplier(){
+        return PatternGlobalMultiplier;
+    }
+    public static void SetGlobalMultiplier(double multiplier){
+        PatternGlobalMultiplier = multiplier;
+    }
+    public static void AddGlobalMultiplier(double multiplier){
+        PatternGlobalMultiplier += multiplier;
     }
 }

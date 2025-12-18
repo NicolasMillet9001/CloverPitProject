@@ -226,7 +226,7 @@ public class InfoPanel extends JPanel {
         JPanel valPanel = new JPanel(new GridBagLayout());
         valPanel.setBackground(new Color(40, 40, 40));
 
-        JLabel val = new JLabel(String.valueOf((int) Symbol.getValue(type)), SwingConstants.RIGHT);
+        JLabel val = new JLabel(String.valueOf((int) Symbol.GetValue(type)), SwingConstants.RIGHT);
         val.setForeground(new Color(255, 215, 0));
 
         JLabel coinIcon = new JLabel();

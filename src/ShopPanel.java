@@ -1,4 +1,3 @@
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -14,6 +13,7 @@ public class ShopPanel extends JPanel {
     private BufferedImage coinIcon;
     private Runnable onRerollCallback;
     private Runnable onCloseCallback; // To refresh main GUI if needed
+    private JLabel moneyLabel;
 
     public ShopPanel(SlotMachine slotMachine, Runnable onRerollCallback, Runnable onCloseCallback) {
         this.slotMachine = slotMachine;
@@ -29,12 +29,36 @@ public class ShopPanel extends JPanel {
             e.printStackTrace();
         }
 
-        // Header
-        JLabel headerLabel = new JLabel("LUCKY CHARMS", SwingConstants.CENTER);
-        headerLabel.setFont(new Font("Stencil", Font.BOLD, 48));
-        headerLabel.setForeground(new Color(210, 180, 140));
-        headerLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
-        add(headerLabel, BorderLayout.NORTH);
+        // Header Panel (Title + Money)
+        JPanel headerPanel = new JPanel(new BorderLayout());
+        headerPanel.setOpaque(false);
+        headerPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
+
+        JLabel titleLabel = new JLabel("LUCKY CHARMS", SwingConstants.CENTER);
+        titleLabel.setFont(new Font("Stencil", Font.BOLD, 48));
+        titleLabel.setForeground(new Color(210, 180, 140));
+        headerPanel.add(titleLabel, BorderLayout.CENTER);
+
+        // Money Label
+        moneyLabel = new JLabel("0");
+        moneyLabel.setFont(new Font("Monospaced", Font.BOLD, 24));
+        moneyLabel.setForeground(Color.WHITE);
+        moneyLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+        JPanel moneyPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        moneyPanel.setOpaque(false);
+        moneyPanel.add(moneyLabel);
+
+        // Add coin icon to money label initially if loaded
+        if (coinIcon != null) {
+            moneyLabel.setIcon(new ImageIcon(coinIcon.getScaledInstance(30, 30, Image.SCALE_SMOOTH)));
+            moneyLabel.setHorizontalTextPosition(SwingConstants.LEFT);
+            moneyLabel.setIconTextGap(10);
+        }
+
+        headerPanel.add(moneyPanel, BorderLayout.EAST);
+
+        add(headerPanel, BorderLayout.NORTH);
 
         // Center Container for Items
         centerContainer = new JPanel();
@@ -43,7 +67,7 @@ public class ShopPanel extends JPanel {
         add(centerContainer, BorderLayout.CENTER);
 
         // Bottom - Reroll Button
-        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         bottomPanel.setOpaque(false);
         bottomPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 20, 0));
 
@@ -82,12 +106,9 @@ public class ShopPanel extends JPanel {
 
     public void refreshItems() {
         centerContainer.removeAll();
+        updateMoneyDisplay();
 
         List<Item> items = slotMachine.getCurrentShopItems();
-
-        // Create rows (Pyramid style: 2 then 3)
-        // If 5 items, split 2 and 3.
-        // If less, adapt.
 
         JPanel row1 = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 0));
         row1.setOpaque(false);
@@ -113,37 +134,55 @@ public class ShopPanel extends JPanel {
         centerContainer.repaint();
     }
 
+    private void updateMoneyDisplay() {
+        int score = (int) slotMachine.GetScore();
+        moneyLabel.setText(String.valueOf(score));
+    }
+
     private JPanel createItemPanel(Item item, int index) {
         JPanel panel = new JPanel();
         panel.setLayout(new BorderLayout());
         panel.setBackground(new Color(60, 60, 60));
         panel.setBorder(BorderFactory.createLineBorder(new Color(100, 100, 100), 2));
-        panel.setPreferredSize(new Dimension(140, 200));
+        panel.setPreferredSize(new Dimension(160, 240)); // Increased size for name
 
-        // Image
+        // Tooltip logic
+        String tooltip = "<html><p width=\"150\">" + item.getDescription() + "</p></html>";
+        panel.setToolTipText(tooltip);
+
+        // Top: Name
+        JLabel nameLabel = new JLabel("<html><div style='text-align: center;'>" + item.getName() + "</div></html>");
+        nameLabel.setForeground(Color.WHITE);
+        nameLabel.setFont(new Font("Arial", Font.PLAIN, 10));
+        nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        nameLabel.setBorder(BorderFactory.createEmptyBorder(5, 5, 0, 5));
+        panel.add(nameLabel, BorderLayout.NORTH);
+
+        // Center: Image
         JLabel imageLabel = new JLabel();
         imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        imageLabel.setToolTipText(tooltip);
         try {
             if (item.getImagePath() != null) {
                 BufferedImage img = ImageIO.read(Objects.requireNonNull(getClass().getResource(item.getImagePath())));
-                Image scaled = img.getScaledInstance(90, 90, Image.SCALE_SMOOTH);
+                Image scaled = img.getScaledInstance(80, 80, Image.SCALE_SMOOTH);
                 imageLabel.setIcon(new ImageIcon(scaled));
             }
         } catch (Exception e) {
-            imageLabel.setText(item.getName());
+            imageLabel.setText("IMG");
         }
         panel.add(imageLabel, BorderLayout.CENTER);
 
-        // Tooltip for description
-        panel.setToolTipText("<html>" + item.getDescription() + "</html>");
-
-        // Price / Buy Logic
+        // Bottom: Price + Button
         JPanel bottom = new JPanel(new GridLayout(2, 1));
         bottom.setOpaque(false);
+        bottom.setToolTipText(tooltip);
 
         // Price
         JPanel pricePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 5));
         pricePanel.setBackground(Color.BLACK);
+        pricePanel.setToolTipText(tooltip);
+
         JLabel priceLabel = new JLabel(String.valueOf(item.getPrice()));
         priceLabel.setForeground(new Color(255, 215, 0));
         priceLabel.setFont(new Font("Monospaced", Font.BOLD, 14));
@@ -159,7 +198,6 @@ public class ShopPanel extends JPanel {
         buyBtn.addActionListener(e -> {
             if (slotMachine.buyItem(index)) {
                 // Item bought
-                // Refresh to remove item
                 refreshItems();
                 if (onRerollCallback != null)
                     onRerollCallback.run(); // Update credits in main UI

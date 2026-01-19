@@ -34,7 +34,7 @@ public class SlotMachine {
     public SlotMachine()
     {
         this.spinsLeft = maxSpinsPerRound;
-        this.minScoreToPass = 100;
+        this.minScoreToPass = calculateMinScoreForRound(currentRound-1);
         spin();
     }
 
@@ -42,7 +42,7 @@ public class SlotMachine {
 
         this.currentRound++;
         this.spinsLeft = maxSpinsPerRound;
-        this.minScoreToPass = calculateMinScoreForRound(currentRound);
+        this.minScoreToPass = calculateMinScoreForRound(currentRound-1);
         spin();
     }
 

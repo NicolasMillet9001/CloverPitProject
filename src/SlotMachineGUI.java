@@ -206,6 +206,13 @@ public class SlotMachineGUI extends JFrame {
                 winners = slotMachine.getWinningCells();
             }
 
+            g2d.setColor(Color.WHITE);
+            g2d.setFont(new Font("Arial", Font.BOLD, 20));
+            g2d.drawString("Round: " + slotMachine.getCurrentRound(), 20, 30);
+
+            // Afficher les lancers restants
+            g2d.drawString("Lancers restants: " + slotMachine.getSpinsLeft(), 20, 60);
+
             if (gridToDraw[0][0] != null) {
                 for (int i = 0; i < 3; i++) {
                     for (int j = 0; j < 5; j++) {

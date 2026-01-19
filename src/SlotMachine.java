@@ -1,3 +1,4 @@
+import javax.swing.*;
 import java.util.Random;
 
 public class SlotMachine {
@@ -5,6 +6,10 @@ public class SlotMachine {
     private Symbol[][] Symbols =  new Symbol[3][5];
     private boolean[][] winningCells = new boolean[3][5];
     private double score = 0;
+    private int maxSpinsPerRound = 10;
+    private int spinsLeft;
+    private int currentRound = 1;
+    private double minScoreToPass;
     
     public double GetScore(){
         return score;
@@ -28,10 +33,31 @@ public class SlotMachine {
 
     public SlotMachine()
     {
+        this.spinsLeft = maxSpinsPerRound;
+        this.minScoreToPass = 100;
         spin();
     }
 
+    public void startNewRound() {
+
+        this.currentRound++;
+        this.spinsLeft = maxSpinsPerRound;
+        this.minScoreToPass = calculateMinScoreForRound(currentRound);
+        spin();
+    }
+
+    private double calculateMinScoreForRound(int round) {
+        return 100 * round;
+    }
+
     public void spin() {
+        if (spinsLeft <= 0) {
+            // Fin du round, ouvrir le shop
+            checkRoundResult();
+            openShop();
+            return;
+        }
+        spinsLeft--;
         // 1. Réinitialisation
         // On génère les nouveaux symboles et on remet les gagnants à zéro
         for (int i = 0; i < 3; i++) {
@@ -164,6 +190,29 @@ public class SlotMachine {
         }
     }
 
+    private void openShop() {
+        System.out.println("Fin du round " + currentRound + " ! Ouverture du shop...");
+        // Logique pour afficher le shop
+    }
+
+    private void checkRoundResult() {
+        if (score >= minScoreToPass) {
+            System.out.println("Round " + currentRound + " réussi ! Ouverture du shop...");
+            openShop();
+        } else {
+            System.out.println("Round " + currentRound + " échoué ! La partie est perdue.");
+            resetGame();
+        }
+    }
+
+    private void resetGame() {
+        this.currentRound = 1;
+        this.spinsLeft = maxSpinsPerRound;
+        this.score = 0;
+        this.minScoreToPass = 100; // Réinitialiser le score minimum
+        JOptionPane.showMessageDialog(null, "Partie perdue ! Recommencez depuis le début.", "Fin de partie", JOptionPane.INFORMATION_MESSAGE);
+    }
+
     // --- Méthodes utilitaires pour marquer les gagnants ---
 
     private void markWinRow(int row, int startCol, int length) {
@@ -203,4 +252,8 @@ public class SlotMachine {
     public boolean[][] getWinningCells() {
         return winningCells;
     }
+
+    public int getSpinsLeft() { return spinsLeft; }
+    public int getCurrentRound() { return currentRound; }
+    public double getMinScoreToPass() { return minScoreToPass; }
 }

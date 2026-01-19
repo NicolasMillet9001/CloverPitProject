@@ -145,7 +145,7 @@ public class InfoPanel extends JPanel {
         pTriInv[1][3] = true; // Côtés
         for (int k = 0; k < 5; k++)
             pTriInv[0][k] = true; // Toute la ligne du haut
-        addPatternRow(pTriInv, "Tri. Inversé", "x " + mTri);
+        addPatternRow(pTriInv, "Elgnairt", "x " + mTri);
 
         // 10. Jackpot
         boolean[][] pFull = new boolean[3][5];

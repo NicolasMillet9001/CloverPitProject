@@ -158,6 +158,10 @@ public class SlotMachineGUI extends JFrame {
             spinButton.setEnabled(true);
             infoButton.setEnabled(true);
             isShopScreenVisible = false;
+
+            // Start next round on close
+            slotMachine.startNewRound();
+
             mainContainer.requestFocusInWindow();
         } else {
             // SHOW SHOP

@@ -306,12 +306,26 @@ public class SlotMachine {
             return;
 
         currentShopItems.clear();
+
+        // Ensure uniqueness using a temporary Set to track added items (by Name or Ref)
         List<Item> pool = new ArrayList<>(allItems);
         Collections.shuffle(pool);
 
-        for (int i = 0; i < Math.min(5, pool.size()); i++) {
-            currentShopItems.add(pool.get(i));
+        List<String> addedNames = new ArrayList<>();
+
+        for (Item item : pool) {
+            if (currentShopItems.size() >= 5)
+                break;
+
+            // Check if we already added an item with this name (to avoid JSON dupes if any)
+            if (!addedNames.contains(item.getName())) {
+                currentShopItems.add(item);
+                addedNames.add(item.getName());
+            }
         }
+
+        // If we ran out of unique items but have less than 5, we just show what we
+        // have.
     }
 
     public List<Item> getCurrentShopItems() {

@@ -17,6 +17,7 @@ public class SlotMachineGUI extends JFrame {
     private CardLayout cardLayout;
     private JButton spinButton;
     private JButton infoButton;
+    private JButton shopButton;
 
     // Animation vars
     private Timer animationTimer;
@@ -27,7 +28,9 @@ public class SlotMachineGUI extends JFrame {
     // Noms des écrans
     private final String CARD_GAME = "GAME";
     private final String CARD_INFO = "INFO";
+    private final String CARD_SHOP = "SHOP";
     private boolean isInfoScreenVisible = false;
+    private boolean isShopScreenVisible = false;
 
     // --- Panel Infos (Déclaré ici pour pouvoir l'appeler) ---
     private InfoPanel infoPanel;
@@ -61,9 +64,11 @@ public class SlotMachineGUI extends JFrame {
         // Création des écrans
         JPanel gamePanel = new SlotMachinePanel();
         infoPanel = new InfoPanel(panelSymbolManager); // On utilise le manager dédié au panel
+        JPanel shopPanel = new ShopPanel();
 
         mainContainer.add(gamePanel, CARD_GAME);
         mainContainer.add(infoPanel, CARD_INFO);
+        mainContainer.add(shopPanel, CARD_SHOP);
 
         // --- 2. BOUTONS ---
         JPanel buttonPanel = new JPanel();
@@ -86,8 +91,17 @@ public class SlotMachineGUI extends JFrame {
         infoButton.setFocusPainted(false);
         infoButton.addActionListener(e -> toggleInfoScreen());
 
+        shopButton = new JButton("SHOP");
+        shopButton.setPreferredSize(new Dimension(100, 50));
+        shopButton.setFont(new Font("Arial", Font.BOLD, 20));
+        shopButton.setBackground(new Color(255, 140, 0)); // Dark Orange
+        shopButton.setForeground(Color.WHITE);
+        shopButton.setFocusPainted(false);
+        shopButton.addActionListener(e -> toggleShopScreen());
+
         buttonPanel.add(spinButton);
         buttonPanel.add(infoButton);
+        buttonPanel.add(shopButton);
 
         // --- 3. INPUT MAP ---
         InputMap im = mainContainer.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
@@ -108,21 +122,52 @@ public class SlotMachineGUI extends JFrame {
 
     private void toggleInfoScreen() {
         if (isInfoScreenVisible) {
+            // BACK TO GAME
             cardLayout.show(mainContainer, CARD_GAME);
             infoButton.setText("?");
             infoButton.setBackground(new Color(70, 130, 180));
             spinButton.setEnabled(true);
+            shopButton.setEnabled(true);
             isInfoScreenVisible = false;
             mainContainer.requestFocusInWindow();
         } else {
-            // Mise à jour des infos avant d'afficher
+            // SHOW INFO
+            // Ensure shop is closed if open handling (though buttons handle this)
+            if (isShopScreenVisible)
+                toggleShopScreen();
+
             infoPanel.updateInfo();
 
             cardLayout.show(mainContainer, CARD_INFO);
             infoButton.setText("X");
             infoButton.setBackground(new Color(200, 50, 50));
             spinButton.setEnabled(false);
+            shopButton.setEnabled(false);
             isInfoScreenVisible = true;
+        }
+    }
+
+    private void toggleShopScreen() {
+        if (isShopScreenVisible) {
+            // BACK TO GAME
+            cardLayout.show(mainContainer, CARD_GAME);
+            shopButton.setText("SHOP");
+            shopButton.setBackground(new Color(255, 140, 0));
+            spinButton.setEnabled(true);
+            infoButton.setEnabled(true);
+            isShopScreenVisible = false;
+            mainContainer.requestFocusInWindow();
+        } else {
+            // SHOW SHOP
+            if (isInfoScreenVisible)
+                toggleInfoScreen();
+
+            cardLayout.show(mainContainer, CARD_SHOP);
+            shopButton.setText("X");
+            shopButton.setBackground(new Color(200, 50, 50));
+            spinButton.setEnabled(false);
+            infoButton.setEnabled(false);
+            isShopScreenVisible = true;
         }
     }
 
@@ -170,7 +215,8 @@ public class SlotMachineGUI extends JFrame {
         // Constantes pour l'affichage du SCORE (Bas-Gauche)
         private static final double REF_SCORE_X = 30.0; // Position X (Gauche)
         private static final double REF_SCORE_Y = 530.0; // Position Y (Bas)
-        private static final double REF_SCORE_W = 200.0; // Largeur du cadre score
+        // private static final double REF_SCORE_W = 200.0; // Largeur du cadre score
+        // (UNUSED)
         private static final double REF_SCORE_H = 60.0; // Hauteur du cadre score
 
         @Override
@@ -254,7 +300,7 @@ public class SlotMachineGUI extends JFrame {
             // Calcul position du cadre score
             int scoreX = (int) (REF_SCORE_X * scaleX);
             int scoreY = (int) (REF_SCORE_Y * scaleY);
-            int scoreW = (int) (REF_SCORE_W * scaleX);
+            // int scoreW = (int) (REF_SCORE_W * scaleX); // UNUSED
             int scoreH = (int) (REF_SCORE_H * scaleY);
 
             // Fond du score (Noir semi-transparent) -> RETIRÉ

@@ -1,40 +1,52 @@
 import javax.swing.*;
 import java.util.Random;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Collections;
 
 public class SlotMachine {
 
-    private Symbol[][] Symbols =  new Symbol[3][5];
+    private Symbol[][] Symbols = new Symbol[3][5];
     private boolean[][] winningCells = new boolean[3][5];
     private double score = 0;
     private int maxSpinsPerRound = 10;
     private int spinsLeft;
     private int currentRound = 1;
     private double minScoreToPass;
-    
-    public double GetScore(){
+
+    // SHOP LOGIC
+    private List<Item> allItems;
+    private List<Item> currentShopItems;
+
+    public double GetScore() {
         return score;
     }
-    
-    public void SetScore(double score){
+
+    public void SetScore(double score) {
         this.score = score;
     }
-    
-    public void AddScore(double score){
+
+    public void AddScore(double score) {
         this.score += score;
     }
 
-    public void AddScore(int nbOfSymbols, Symbol symbol, Pattern.PatternType pattern){
-        this.score += nbOfSymbols * (Symbol.GetValue(symbol.GetSymbolType())*Symbol.GetSymbolGlobalValueMultiplier()) * (Pattern.GetMultiplier(pattern) * Pattern.GetGlobalMultiplier());
+    public void AddScore(int nbOfSymbols, Symbol symbol, Pattern.PatternType pattern) {
+        this.score += nbOfSymbols * (Symbol.GetValue(symbol.GetSymbolType()) * Symbol.GetSymbolGlobalValueMultiplier())
+                * (Pattern.GetMultiplier(pattern) * Pattern.GetGlobalMultiplier());
     }
-    
-    public void SubstractScore(double score){
+
+    public void SubstractScore(double score) {
         this.score -= score;
     }
 
-    public SlotMachine()
-    {
+    public SlotMachine() {
         this.spinsLeft = maxSpinsPerRound;
-        this.minScoreToPass = calculateMinScoreForRound(currentRound-1);
+        this.minScoreToPass = calculateMinScoreForRound(currentRound - 1);
+
+        // Load Items
+        allItems = ItemLoader.loadItems();
+        currentShopItems = new ArrayList<>();
+
         spin();
     }
 
@@ -42,7 +54,7 @@ public class SlotMachine {
 
         this.currentRound++;
         this.spinsLeft = maxSpinsPerRound;
-        this.minScoreToPass = calculateMinScoreForRound(currentRound-1);
+        this.minScoreToPass = calculateMinScoreForRound(currentRound - 1);
         spin();
     }
 
@@ -71,24 +83,30 @@ public class SlotMachine {
             // --- Vérification des lignes ---
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 3; j++) {
-                    if (Symbols[i][j].GetSymbolType() == Symbols[i][j+1].GetSymbolType() &&  Symbols[i][j].GetSymbolType() == Symbols[i][j+2].GetSymbolType()) {
-                        if (j==0 || Symbols[i][j].GetSymbolType() != Symbols[i][j-1].GetSymbolType()){ // Vérifie que la ligne n'a pas déjà été comptée
-                            if (j<2 && Symbols[i][j].GetSymbolType() == Symbols[i][j+3].GetSymbolType()) {
-                                if (j==0 && Symbols[i][j].GetSymbolType() == Symbols[i][j+4].GetSymbolType()) {
+                    if (Symbols[i][j].GetSymbolType() == Symbols[i][j + 1].GetSymbolType()
+                            && Symbols[i][j].GetSymbolType() == Symbols[i][j + 2].GetSymbolType()) {
+                        if (j == 0 || Symbols[i][j].GetSymbolType() != Symbols[i][j - 1].GetSymbolType()) { // Vérifie
+                                                                                                            // que la
+                                                                                                            // ligne n'a
+                                                                                                            // pas déjà
+                                                                                                            // été
+                                                                                                            // comptée
+                            if (j < 2 && Symbols[i][j].GetSymbolType() == Symbols[i][j + 3].GetSymbolType()) {
+                                if (j == 0 && Symbols[i][j].GetSymbolType() == Symbols[i][j + 4].GetSymbolType()) {
                                     System.out.println("Une ligne de 5 !");
                                     this.AddScore(5, Symbols[i][j], Pattern.PatternType.horizontal5);
                                     markWinRow(i, j, 5);
 
-                                }else{
+                                } else {
                                     System.out.println("Une ligne de 4 !");
                                     this.AddScore(4, Symbols[i][j], Pattern.PatternType.horizontal4);
                                     markWinRow(i, j, 4);
 
                                 }
-                            }else{
+                            } else {
                                 System.out.println("Une ligne de 3 !");
                                 this.AddScore(3, Symbols[i][j], Pattern.PatternType.horizontal3);
-								markWinRow(i, j, 3);
+                                markWinRow(i, j, 3);
                             }
                         }
                     }
@@ -97,7 +115,8 @@ public class SlotMachine {
 
             // --- Vérification des colonnes ---
             for (int j = 0; j < 5; j++) {
-                if (Symbols[0][j].GetSymbolType() == Symbols[1][j].GetSymbolType() && Symbols[0][j].GetSymbolType() == Symbols[2][j].GetSymbolType()) {
+                if (Symbols[0][j].GetSymbolType() == Symbols[1][j].GetSymbolType()
+                        && Symbols[0][j].GetSymbolType() == Symbols[2][j].GetSymbolType()) {
                     System.out.println("Une colonne de 3 !");
                     this.AddScore(3, Symbols[0][j], Pattern.PatternType.vertical3);
                     winningCells[0][j] = true;
@@ -109,11 +128,16 @@ public class SlotMachine {
             // --- Vérification des diagonales et formes spéciales ---
             for (int j = 0; j < 3; j++) {
                 // Diagonale Droite (Haut-Gauche vers Bas-Droite)
-                if (Symbols[0][j].GetSymbolType() == Symbols[1][j+1].GetSymbolType() && Symbols[0][j].GetSymbolType() == Symbols[2][j+2].GetSymbolType()) {
+                if (Symbols[0][j].GetSymbolType() == Symbols[1][j + 1].GetSymbolType()
+                        && Symbols[0][j].GetSymbolType() == Symbols[2][j + 2].GetSymbolType()) {
 
                     // Vérification "Triangle Inversé" ou "V"
-                    if (j == 0 && Symbols[0][j].GetSymbolType() == Symbols[1][3].GetSymbolType() && Symbols[0][j].GetSymbolType() == Symbols[0][4].GetSymbolType()) {
-                        if (Symbols[0][0].GetSymbolType() == Symbols[0][1].GetSymbolType() && Symbols[0][0].GetSymbolType() == Symbols[0][2].GetSymbolType() && Symbols[0][0].GetSymbolType() == Symbols[0][3].GetSymbolType() && Symbols[0][0].GetSymbolType() == Symbols[0][4].GetSymbolType()) {
+                    if (j == 0 && Symbols[0][j].GetSymbolType() == Symbols[1][3].GetSymbolType()
+                            && Symbols[0][j].GetSymbolType() == Symbols[0][4].GetSymbolType()) {
+                        if (Symbols[0][0].GetSymbolType() == Symbols[0][1].GetSymbolType()
+                                && Symbols[0][0].GetSymbolType() == Symbols[0][2].GetSymbolType()
+                                && Symbols[0][0].GetSymbolType() == Symbols[0][3].GetSymbolType()
+                                && Symbols[0][0].GetSymbolType() == Symbols[0][4].GetSymbolType()) {
                             System.out.println("Triangle Inverse !");
                             this.AddScore(8, Symbols[0][j], Pattern.PatternType.triangle);
                             // Tout le triangle
@@ -130,7 +154,8 @@ public class SlotMachine {
                             winningCells[0][4] = true;
                         }
                     } else {
-                        if (j!=2 || (Symbols[0][2].GetSymbolType() != Symbols[1][1].GetSymbolType() && Symbols[0][2].GetSymbolType() != Symbols[2][0].GetSymbolType())) {
+                        if (j != 2 || (Symbols[0][2].GetSymbolType() != Symbols[1][1].GetSymbolType()
+                                && Symbols[0][2].GetSymbolType() != Symbols[2][0].GetSymbolType())) {
                             System.out.println("Une diagonale droite !");
                             this.AddScore(3, Symbols[0][2], Pattern.PatternType.diagonal);
                             markWinDiagonalRight(j);
@@ -138,14 +163,22 @@ public class SlotMachine {
                     }
                 }
 
-                // Diagonale Gauche (Bas-Gauche vers Haut-Droite ou inversement selon l'implémentation)
-                // Note: Ton code original utilise `4-j`, donc on part de la droite vers la gauche
-                if (Symbols[0][4-j].GetSymbolType() == Symbols[1][3-j].GetSymbolType() && Symbols[0][4-j].GetSymbolType() == Symbols[2][2-j].GetSymbolType()) {
+                // Diagonale Gauche (Bas-Gauche vers Haut-Droite ou inversement selon
+                // l'implémentation)
+                // Note: Ton code original utilise `4-j`, donc on part de la droite vers la
+                // gauche
+                if (Symbols[0][4 - j].GetSymbolType() == Symbols[1][3 - j].GetSymbolType()
+                        && Symbols[0][4 - j].GetSymbolType() == Symbols[2][2 - j].GetSymbolType()) {
 
                     // Vérification "Triangle" ou "^"
-                    if (j == 2 && Symbols[0][2].GetSymbolType() == Symbols[1][3].GetSymbolType() && Symbols[0][2].GetSymbolType() == Symbols[2][4].GetSymbolType()) {
-                        // Note: la logique originale ici semble complexe, je simplifie pour marquer les cases impliquées
-                        if (Symbols[2][0].GetSymbolType() == Symbols[2][1].GetSymbolType() && Symbols[2][0].GetSymbolType() == Symbols[2][2].GetSymbolType() && Symbols[2][0].GetSymbolType() == Symbols[2][3].GetSymbolType() && Symbols[2][0].GetSymbolType() == Symbols[2][4].GetSymbolType()) {
+                    if (j == 2 && Symbols[0][2].GetSymbolType() == Symbols[1][3].GetSymbolType()
+                            && Symbols[0][2].GetSymbolType() == Symbols[2][4].GetSymbolType()) {
+                        // Note: la logique originale ici semble complexe, je simplifie pour marquer les
+                        // cases impliquées
+                        if (Symbols[2][0].GetSymbolType() == Symbols[2][1].GetSymbolType()
+                                && Symbols[2][0].GetSymbolType() == Symbols[2][2].GetSymbolType()
+                                && Symbols[2][0].GetSymbolType() == Symbols[2][3].GetSymbolType()
+                                && Symbols[2][0].GetSymbolType() == Symbols[2][4].GetSymbolType()) {
                             System.out.println("Triangle !");
                             this.AddScore(8, Symbols[0][2], Pattern.PatternType.triangle);
                             markWinDiagonalLeft(j);
@@ -172,7 +205,7 @@ public class SlotMachine {
             boolean jackpot = true;
             for (int i = 0; i < 3 && jackpot; i++) {
                 for (int j = 0; j < 5; j++) {
-                    if (Symbols[0][0].GetSymbolType() != Symbols[i][j].GetSymbolType()){
+                    if (Symbols[0][0].GetSymbolType() != Symbols[i][j].GetSymbolType()) {
                         jackpot = false;
                         break;
                     }
@@ -181,18 +214,29 @@ public class SlotMachine {
             if (jackpot) {
                 System.out.println("Jackpot !");
                 this.AddScore(15, Symbols[0][0], Pattern.PatternType.jackpot);
-				for(int i=0; i<3; i++) for(int k=0; k<5; k++) winningCells[i][k] = true;
+                for (int i = 0; i < 3; i++)
+                    for (int k = 0; k < 5; k++)
+                        winningCells[i][k] = true;
             }
 
-            System.out.println("Score : "+GetScore());
-        }catch(Exception e){
+            System.out.println("Score : " + GetScore());
+        } catch (Exception e) {
             System.out.println(e);
         }
     }
 
+    private Runnable onShopOpenListener;
+
+    public void setOnShopOpenListener(Runnable listener) {
+        this.onShopOpenListener = listener;
+    }
+
     private void openShop() {
         System.out.println("Fin du round " + currentRound + " ! Ouverture du shop...");
-        // Logique pour afficher le shop
+        generateShopItems();
+        if (onShopOpenListener != null) {
+            onShopOpenListener.run();
+        }
     }
 
     private void checkRoundResult() {
@@ -210,14 +254,16 @@ public class SlotMachine {
         this.spinsLeft = maxSpinsPerRound;
         this.score = 0;
         this.minScoreToPass = 100; // Réinitialiser le score minimum
-        JOptionPane.showMessageDialog(null, "Partie perdue ! Recommencez depuis le début.", "Fin de partie", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(null, "Partie perdue ! Recommencez depuis le début.", "Fin de partie",
+                JOptionPane.INFORMATION_MESSAGE);
     }
 
     // --- Méthodes utilitaires pour marquer les gagnants ---
 
     private void markWinRow(int row, int startCol, int length) {
         for (int k = 0; k < length; k++) {
-            if (startCol + k < 5) winningCells[row][startCol + k] = true;
+            if (startCol + k < 5)
+                winningCells[row][startCol + k] = true;
         }
     }
 
@@ -253,7 +299,62 @@ public class SlotMachine {
         return winningCells;
     }
 
-    public int getSpinsLeft() { return spinsLeft; }
-    public int getCurrentRound() { return currentRound; }
-    public double getMinScoreToPass() { return minScoreToPass; }
+    // --- SHOP LOGIC ---
+
+    public void generateShopItems() {
+        if (allItems.isEmpty())
+            return;
+
+        currentShopItems.clear();
+        List<Item> pool = new ArrayList<>(allItems);
+        Collections.shuffle(pool);
+
+        for (int i = 0; i < Math.min(5, pool.size()); i++) {
+            currentShopItems.add(pool.get(i));
+        }
+    }
+
+    public List<Item> getCurrentShopItems() {
+        return currentShopItems;
+    }
+
+    public boolean rerollShop() {
+        if (score >= 10) {
+            SubstractScore(10);
+            generateShopItems();
+            return true;
+        }
+        return false;
+    }
+
+    public boolean buyItem(int index) {
+        if (index < 0 || index >= currentShopItems.size())
+            return false;
+
+        Item item = currentShopItems.get(index);
+        if (score >= item.getPrice()) {
+            SubstractScore(item.getPrice());
+            applyItemEffect(item);
+            currentShopItems.remove(index);
+            return true;
+        }
+        return false;
+    }
+
+    private void applyItemEffect(Item item) {
+        System.out.println("Applying item effect: " + item.getName());
+        // Placeholder for logic link
+    }
+
+    public int getSpinsLeft() {
+        return spinsLeft;
+    }
+
+    public int getCurrentRound() {
+        return currentRound;
+    }
+
+    public double getMinScoreToPass() {
+        return minScoreToPass;
+    }
 }

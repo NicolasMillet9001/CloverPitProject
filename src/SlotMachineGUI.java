@@ -17,7 +17,7 @@ public class SlotMachineGUI extends JFrame {
     private CardLayout cardLayout;
     private JButton spinButton;
     private JButton infoButton;
-    private JButton shopButton;
+    // private JButton shopButton;
 
     // Animation vars
     private Timer animationTimer;
@@ -33,7 +33,9 @@ public class SlotMachineGUI extends JFrame {
     private boolean isShopScreenVisible = false;
 
     // --- Panel Infos (Déclaré ici pour pouvoir l'appeler) ---
+    // --- Panel Infos (Déclaré ici pour pouvoir l'appeler) ---
     private InfoPanel infoPanel;
+    private ShopPanel shopPanel;
 
     public SlotMachineGUI() {
         slotMachine = new SlotMachine();
@@ -62,9 +64,12 @@ public class SlotMachineGUI extends JFrame {
         mainContainer = new JPanel(cardLayout);
 
         // Création des écrans
+        // Création des écrans
         JPanel gamePanel = new SlotMachinePanel();
         infoPanel = new InfoPanel(panelSymbolManager); // On utilise le manager dédié au panel
-        JPanel shopPanel = new ShopPanel();
+        shopPanel = new ShopPanel(slotMachine,
+                () -> repaint(),
+                () -> toggleShopScreen());
 
         mainContainer.add(gamePanel, CARD_GAME);
         mainContainer.add(infoPanel, CARD_INFO);
@@ -91,29 +96,27 @@ public class SlotMachineGUI extends JFrame {
         infoButton.setFocusPainted(false);
         infoButton.addActionListener(e -> toggleInfoScreen());
 
-        shopButton = new JButton("SHOP");
-        shopButton.setPreferredSize(new Dimension(100, 50));
-        shopButton.setFont(new Font("Arial", Font.BOLD, 20));
-        shopButton.setBackground(new Color(255, 140, 0)); // Dark Orange
-        shopButton.setForeground(Color.WHITE);
-        shopButton.setFocusPainted(false);
-        shopButton.addActionListener(e -> toggleShopScreen());
+        // shopButton = new JButton("SHOP");
+        // shopButton.setPreferredSize(new Dimension(100, 50));
+        // shopButton.setFont(new Font("Arial", Font.BOLD, 20));
+        // shopButton.setBackground(new Color(255, 140, 0)); // Dark Orange
+        // shopButton.setForeground(Color.WHITE);
+        // shopButton.setFocusPainted(false);
+        // shopButton.addActionListener(e -> toggleShopScreen());
+        // buttonPanel.add(shopButton); // Removed per user request
 
         buttonPanel.add(spinButton);
         buttonPanel.add(infoButton);
-        buttonPanel.add(shopButton);
 
-        // --- 3. INPUT MAP ---
-        InputMap im = mainContainer.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
-        ActionMap am = mainContainer.getActionMap();
-        im.put(KeyStroke.getKeyStroke("SPACE"), "spinAction");
-        am.put("spinAction", new AbstractAction() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (!isInfoScreenVisible) {
-                    startSpin();
+        // Auto-Open Shop Listener
+        slotMachine.setOnShopOpenListener(() -> {
+            // Use SwingUtilities to be safe, though usually this callback originates from
+            // spin -> GUI thread anyway
+            SwingUtilities.invokeLater(() -> {
+                if (!isShopScreenVisible) {
+                    toggleShopScreen();
                 }
-            }
+            });
         });
 
         add(mainContainer, BorderLayout.CENTER);
@@ -127,7 +130,7 @@ public class SlotMachineGUI extends JFrame {
             infoButton.setText("?");
             infoButton.setBackground(new Color(70, 130, 180));
             spinButton.setEnabled(true);
-            shopButton.setEnabled(true);
+
             isInfoScreenVisible = false;
             mainContainer.requestFocusInWindow();
         } else {
@@ -142,7 +145,7 @@ public class SlotMachineGUI extends JFrame {
             infoButton.setText("X");
             infoButton.setBackground(new Color(200, 50, 50));
             spinButton.setEnabled(false);
-            shopButton.setEnabled(false);
+
             isInfoScreenVisible = true;
         }
     }
@@ -151,20 +154,20 @@ public class SlotMachineGUI extends JFrame {
         if (isShopScreenVisible) {
             // BACK TO GAME
             cardLayout.show(mainContainer, CARD_GAME);
-            shopButton.setText("SHOP");
-            shopButton.setBackground(new Color(255, 140, 0));
+
             spinButton.setEnabled(true);
             infoButton.setEnabled(true);
             isShopScreenVisible = false;
             mainContainer.requestFocusInWindow();
         } else {
             // SHOW SHOP
+            shopPanel.refreshItems(); // Refresh items in UI
+
             if (isInfoScreenVisible)
                 toggleInfoScreen();
 
             cardLayout.show(mainContainer, CARD_SHOP);
-            shopButton.setText("X");
-            shopButton.setBackground(new Color(200, 50, 50));
+
             spinButton.setEnabled(false);
             infoButton.setEnabled(false);
             isShopScreenVisible = true;

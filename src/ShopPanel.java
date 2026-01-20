@@ -1,5 +1,7 @@
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
@@ -30,28 +32,13 @@ public class ShopPanel extends JPanel {
 
         initHeader();
 
-        // Center Container uses WrapLayout
-        centerContainer = new JPanel(new WrapLayout(FlowLayout.CENTER, 30, 30));
+        // Center Container - Grid Layout to force items into one row
+        centerContainer = new JPanel(new GridLayout(1, 0, 10, 10)); // 1 row, any cols, gaps
         centerContainer.setOpaque(false);
-        // Important: preferred size helps constraint panel know target size
-        centerContainer.setPreferredSize(new Dimension(600, 600));
+        // Add padding around the items
+        centerContainer.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
-        // Constraint Panel to enforce max width for 3 items on wide screens
-        JPanel constraintPanel = new JPanel(new GridBagLayout());
-        constraintPanel.setOpaque(false);
-        constraintPanel.add(centerContainer);
-
-        JScrollPane scrollPane = new JScrollPane(constraintPanel);
-        scrollPane.setOpaque(false);
-        scrollPane.getViewport().setOpaque(false);
-        scrollPane.setBorder(null);
-        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-
-        // Hide scrollbar visual (size 0) but keep functionality
-        scrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(0, 0));
-        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-
-        add(scrollPane, BorderLayout.CENTER);
+        add(centerContainer, BorderLayout.CENTER);
 
         // Bottom - Buttons
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
@@ -142,7 +129,7 @@ public class ShopPanel extends JPanel {
         List<Item> items = slotMachine.getCurrentShopItems();
 
         for (int i = 0; i < items.size(); i++) {
-            JPanel itemPanel = createItemPanel(items.get(i), i);
+            ItemPanel itemPanel = new ItemPanel(items.get(i), i);
             centerContainer.add(itemPanel);
         }
 
@@ -155,165 +142,164 @@ public class ShopPanel extends JPanel {
         moneyLabel.setText(String.valueOf(score));
     }
 
-    private JPanel createItemPanel(Item item, int index) {
-        JPanel panel = new JPanel();
-        panel.setLayout(new BorderLayout());
-        panel.setBackground(new Color(60, 60, 60));
-        panel.setBorder(BorderFactory.createLineBorder(new Color(100, 100, 100), 2));
-        panel.setPreferredSize(new Dimension(160, 240));
+    // --- Inner Class for Scalable Item Panel ---
+    private class ItemPanel extends JPanel {
+        private JLabel nameLabel;
+        private JLabel imageLabel;
+        private JLabel priceLabel;
+        private JLabel priceIconLabel;
+        private JButton buyBtn;
 
-        String tooltip = "<html><p width=\"150\">" + item.getDescription() + "</p></html>";
-        panel.setToolTipText(tooltip);
+        // Base sizes for scaling reference
+        private final int BASE_W = 160;
+        private final int BASE_H = 240;
+        private final int BASE_IMG_SIZE = 80;
+        private final float BASE_NAME_FONT = 10f;
+        private final float BASE_PRICE_FONT = 14f;
+        private final float BASE_BTN_FONT = 12f;
 
-        // Top: Name
-        JLabel nameLabel = new JLabel("<html><div style='text-align: center;'>" + item.getName() + "</div></html>");
-        nameLabel.setForeground(Color.WHITE);
-        nameLabel.setFont(new Font("Arial", Font.PLAIN, 10));
-        nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        nameLabel.setBorder(BorderFactory.createEmptyBorder(5, 5, 0, 5));
-        panel.add(nameLabel, BorderLayout.NORTH);
+        private BufferedImage originalImage;
 
-        // Center: Image
-        JLabel imageLabel = new JLabel();
-        imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        imageLabel.setToolTipText(tooltip);
-        try {
-            if (item.getImagePath() != null) {
-                BufferedImage img = ImageIO.read(Objects.requireNonNull(getClass().getResource(item.getImagePath())));
-                Image scaled = img.getScaledInstance(80, 80, Image.SCALE_SMOOTH);
-                imageLabel.setIcon(new ImageIcon(scaled));
-            }
-        } catch (Exception e) {
-            imageLabel.setText("IMG");
-        }
-        panel.add(imageLabel, BorderLayout.CENTER);
+        public ItemPanel(Item item, int index) {
+            setLayout(new GridBagLayout()); // More control than BorderLayout for centering
+            setBackground(new Color(60, 60, 60));
+            setBorder(BorderFactory.createLineBorder(new Color(100, 100, 100), 2));
 
-        // Bottom: Price + Button
-        JPanel bottom = new JPanel(new GridLayout(2, 1));
-        bottom.setOpaque(false);
-        bottom.setToolTipText(tooltip);
+            String tooltip = "<html><p width=\"150\">" + item.getDescription() + "</p></html>";
+            setToolTipText(tooltip);
 
-        JPanel pricePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 5));
-        pricePanel.setBackground(Color.BLACK);
-        pricePanel.setToolTipText(tooltip);
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.insets = new Insets(5, 5, 5, 5);
+            gbc.gridx = 0;
+            gbc.weightx = 1.0;
+            gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        JLabel priceLabel = new JLabel(String.valueOf(item.getPrice()));
-        priceLabel.setForeground(new Color(255, 215, 0));
-        priceLabel.setFont(new Font("Monospaced", Font.BOLD, 14));
-        pricePanel.add(priceLabel);
-        if (coinIcon != null) {
-            pricePanel.add(new JLabel(new ImageIcon(coinIcon.getScaledInstance(15, 15, Image.SCALE_SMOOTH))));
-        }
-        bottom.add(pricePanel);
+            // 1. Name
+            nameLabel = new JLabel("<html><div style='text-align: center;'>" + item.getName() + "</div></html>");
+            nameLabel.setForeground(Color.WHITE);
+            nameLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-        JButton buyBtn = new JButton("BUY");
-        buyBtn.setFont(new Font("Arial", Font.BOLD, 12));
-        buyBtn.addActionListener(e -> {
-            if (slotMachine.buyItem(index)) {
-                refreshItems();
-                if (onRerollCallback != null)
-                    onRerollCallback.run();
-            } else {
-                JOptionPane.showMessageDialog(ShopPanel.this, "Not enough coins!");
-            }
-        });
-        bottom.add(buyBtn);
+            gbc.gridy = 0;
+            gbc.weighty = 0.1;
+            gbc.anchor = GridBagConstraints.NORTH;
+            add(nameLabel, gbc);
 
-        panel.add(bottom, BorderLayout.SOUTH);
-
-        return panel;
-    }
-
-    /**
-     * FlowLayout subclass that fully supports wrapping of components.
-     */
-    public class WrapLayout extends FlowLayout {
-        private Dimension preferredLayoutSize;
-
-        public WrapLayout() {
-            super();
-        }
-
-        public WrapLayout(int align) {
-            super(align);
-        }
-
-        public WrapLayout(int align, int hgap, int vgap) {
-            super(align, hgap, vgap);
-        }
-
-        @Override
-        public Dimension preferredLayoutSize(Container target) {
-            return layoutSize(target, true);
-        }
-
-        @Override
-        public Dimension minimumLayoutSize(Container target) {
-            Dimension minimum = layoutSize(target, false);
-            minimum.width -= (getHgap() + 1);
-            return minimum;
-        }
-
-        private Dimension layoutSize(Container target, boolean preferred) {
-            synchronized (target.getTreeLock()) {
-                int targetWidth = target.getSize().width;
-
-                if (targetWidth == 0)
-                    targetWidth = Integer.MAX_VALUE;
-
-                int hgap = getHgap();
-                int vgap = getVgap();
-                Insets insets = target.getInsets();
-                int horizontalInsetsAndGap = insets.left + insets.right + (hgap * 2);
-                int maxWidth = targetWidth - horizontalInsetsAndGap;
-
-                Dimension dim = new Dimension(0, 0);
-                int rowWidth = 0;
-                int rowHeight = 0;
-
-                int nmembers = target.getComponentCount();
-
-                for (int i = 0; i < nmembers; i++) {
-                    Component m = target.getComponent(i);
-
-                    if (m.isVisible()) {
-                        Dimension d = preferred ? m.getPreferredSize() : m.getMinimumSize();
-
-                        if (rowWidth + d.width > maxWidth) {
-                            addRow(dim, rowWidth, rowHeight);
-                            rowWidth = 0;
-                            rowHeight = 0;
-                        }
-
-                        if (rowWidth != 0) {
-                            rowWidth += hgap;
-                        }
-
-                        rowWidth += d.width;
-                        rowHeight = Math.max(rowHeight, d.height);
-                    }
+            // 2. Image
+            imageLabel = new JLabel();
+            imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+            try {
+                if (item.getImagePath() != null) {
+                    originalImage = ImageIO.read(Objects.requireNonNull(getClass().getResource(item.getImagePath())));
+                    // Initial scale
+                    imageLabel.setIcon(new ImageIcon(
+                            originalImage.getScaledInstance(BASE_IMG_SIZE, BASE_IMG_SIZE, Image.SCALE_SMOOTH)));
                 }
-
-                addRow(dim, rowWidth, rowHeight);
-
-                dim.width += horizontalInsetsAndGap;
-                dim.height += insets.top + insets.bottom + vgap * 2;
-
-                Container scrollPane = SwingUtilities.getAncestorOfClass(JScrollPane.class, target);
-                if (scrollPane != null && target.isValid()) {
-                    dim.width -= (hgap + 1);
-                }
-
-                return dim;
+            } catch (Exception e) {
+                imageLabel.setText("IMG");
             }
+
+            gbc.gridy = 1;
+            gbc.weighty = 0.6;
+            gbc.anchor = GridBagConstraints.CENTER;
+            gbc.fill = GridBagConstraints.BOTH;
+            add(imageLabel, gbc);
+
+            // 3. Price Panel
+            JPanel pricePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
+            pricePanel.setOpaque(false);
+
+            priceLabel = new JLabel(String.valueOf(item.getPrice()));
+            priceLabel.setForeground(new Color(255, 215, 0));
+            pricePanel.add(priceLabel);
+
+            priceIconLabel = new JLabel();
+            if (coinIcon != null) {
+                priceIconLabel.setIcon(new ImageIcon(coinIcon.getScaledInstance(15, 15, Image.SCALE_SMOOTH)));
+                pricePanel.add(priceIconLabel);
+            }
+
+            gbc.gridy = 2;
+            gbc.weighty = 0.1;
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+            add(pricePanel, gbc);
+
+            // 4. Buy Button
+            buyBtn = new JButton("BUY");
+
+            boolean isSold = slotMachine.isItemSold(index);
+            if (isSold) {
+                buyBtn.setText("VENDU");
+                buyBtn.setEnabled(false);
+                buyBtn.setBackground(Color.GRAY);
+            }
+
+            buyBtn.addActionListener(e -> {
+                if (slotMachine.buyItem(index)) {
+                    // Check again after refresh if needed, but simplest is full refresh
+                    ShopPanel.this.refreshItems();
+                    if (onRerollCallback != null)
+                        onRerollCallback.run();
+                } else {
+                    JOptionPane.showMessageDialog(ShopPanel.this, "Not enough coins!");
+                }
+            });
+
+            gbc.gridy = 3;
+            gbc.weighty = 0.2;
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+            add(buyBtn, gbc);
+
+            // Add resize listener
+            addComponentListener(new ComponentAdapter() {
+                @Override
+                public void componentResized(ComponentEvent e) {
+                    updateScaling();
+                }
+            });
         }
 
-        private void addRow(Dimension dim, int rowWidth, int rowHeight) {
-            dim.width = Math.max(dim.width, rowWidth);
-            if (dim.height > 0) {
-                dim.height += getVgap();
+        private void updateScaling() {
+            int w = getWidth();
+            int h = getHeight();
+
+            // Calculate scale ratio relative to base size
+            // Use the smaller dimension to constrain scaling so it fits
+            double scaleW = (double) w / BASE_W;
+            double scaleH = (double) h / BASE_H;
+            double scale = Math.min(scaleW, scaleH);
+
+            // Limit scale to realistic values to prevent microscopic or huge items
+            scale = Math.max(0.3, Math.min(scale, 2.0));
+
+            // Update Fonts
+            Font baseFont = new Font("Arial", Font.PLAIN, 10);
+            nameLabel.setFont(baseFont.deriveFont((float) (BASE_NAME_FONT * scale)));
+
+            Font priceFont = new Font("Monospaced", Font.BOLD, 14);
+            priceLabel.setFont(priceFont.deriveFont((float) (BASE_PRICE_FONT * scale)));
+
+            Font btnFont = new Font("Arial", Font.BOLD, 12);
+            buyBtn.setFont(btnFont.deriveFont((float) (BASE_BTN_FONT * scale)));
+
+            // Update Image
+            if (originalImage != null) {
+                int imgSize = (int) (BASE_IMG_SIZE * scale);
+                if (imgSize > 0) {
+                    imageLabel.setIcon(
+                            new ImageIcon(originalImage.getScaledInstance(imgSize, imgSize, Image.SCALE_SMOOTH)));
+                }
             }
-            dim.height += rowHeight;
+
+            // Update Coin Icon
+            if (coinIcon != null) {
+                int coinSize = (int) (15 * scale);
+                if (coinSize > 0)
+                    priceIconLabel
+                            .setIcon(new ImageIcon(coinIcon.getScaledInstance(coinSize, coinSize, Image.SCALE_SMOOTH)));
+            }
+
+            revalidate();
+            // Don't call repaint loop here usually, but if needed
         }
     }
 }

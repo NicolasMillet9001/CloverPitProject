@@ -17,6 +17,7 @@ public class SlotMachine {
     // SHOP LOGIC
     private List<Item> allItems;
     private List<Item> currentShopItems;
+    private java.util.Set<Integer> soldIndices = new java.util.HashSet<>();
 
     public double GetScore() {
         return score;
@@ -47,7 +48,7 @@ public class SlotMachine {
         allItems = ItemLoader.loadItems();
         currentShopItems = new ArrayList<>();
 
-        spin();
+        // spin(); // Removed to prevent auto-start
     }
 
     public void startNewRound() {
@@ -55,7 +56,14 @@ public class SlotMachine {
         this.currentRound++;
         this.spinsLeft = maxSpinsPerRound;
         this.minScoreToPass = calculateMinScoreForRound(currentRound - 1);
-        spin();
+        // Reset grid for manual start
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 5; j++) {
+                Symbols[i][j] = null;
+                winningCells[i][j] = false;
+            }
+        }
+        // spin(); // Removed to require manual start
     }
 
     private double calculateMinScoreForRound(int round) {
@@ -307,6 +315,7 @@ public class SlotMachine {
             return;
 
         currentShopItems.clear();
+        soldIndices.clear();
 
         // Ensure uniqueness using a temporary Set to track added items (by Name or Ref)
         List<Item> pool = new ArrayList<>(allItems);
@@ -333,6 +342,10 @@ public class SlotMachine {
         return currentShopItems;
     }
 
+    public boolean isItemSold(int index) {
+        return soldIndices.contains(index);
+    }
+
     public boolean rerollShop() {
         if (score >= 10) {
             SubstractScore(10);
@@ -346,11 +359,15 @@ public class SlotMachine {
         if (index < 0 || index >= currentShopItems.size())
             return false;
 
+        if (soldIndices.contains(index))
+            return false;
+
         Item item = currentShopItems.get(index);
         if (score >= item.getPrice()) {
             SubstractScore(item.getPrice());
             applyItemEffect(item);
-            currentShopItems.remove(index);
+            soldIndices.add(index);
+            // currentShopItems.remove(index); // Removed to keep item in list
             return true;
         }
         return false;

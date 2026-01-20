@@ -375,7 +375,79 @@ public class SlotMachine {
 
     private void applyItemEffect(Item item) {
         System.out.println("Applying item effect: " + item.getName());
-        // Placeholder for logic link
+
+        List<String> targets = item.getTargetStats();
+        List<Double> modifiers = item.getStatsModifiers();
+
+        if (targets.size() != modifiers.size()) {
+            System.err.println("Error: Targets and Modifiers size mismatch for item " + item.getName());
+            return;
+        }
+
+        for (int i = 0; i < targets.size(); i++) {
+            String target = targets.get(i);
+            double mod = modifiers.get(i);
+
+            // --- Symbol Values ---
+            if (target.equals("CeriseValue"))
+                Symbol.SetValue(Symbol.EnumSymbolType.Cerise, Symbol.GetValue(Symbol.EnumSymbolType.Cerise) * mod);
+            else if (target.equals("ClocheValue"))
+                Symbol.SetValue(Symbol.EnumSymbolType.Cloche, Symbol.GetValue(Symbol.EnumSymbolType.Cloche) * mod);
+            else if (target.equals("TrefleValue"))
+                Symbol.SetValue(Symbol.EnumSymbolType.Trefle, Symbol.GetValue(Symbol.EnumSymbolType.Trefle) * mod);
+            else if (target.equals("CoffreValue"))
+                Symbol.SetValue(Symbol.EnumSymbolType.Coffre, Symbol.GetValue(Symbol.EnumSymbolType.Coffre) * mod);
+            else if (target.equals("DiamantValue"))
+                Symbol.SetValue(Symbol.EnumSymbolType.Diamant, Symbol.GetValue(Symbol.EnumSymbolType.Diamant) * mod);
+            else if (target.equals("SeptValue"))
+                Symbol.SetValue(Symbol.EnumSymbolType.Sept, Symbol.GetValue(Symbol.EnumSymbolType.Sept) * mod);
+
+            // --- Symbol Luck ---
+            else if (target.equals("CeriseLuck"))
+                Symbol.SetChance(Symbol.EnumSymbolType.Cerise, Symbol.GetChance(Symbol.EnumSymbolType.Cerise) * mod);
+            else if (target.equals("ClocheLuck"))
+                Symbol.SetChance(Symbol.EnumSymbolType.Cloche, Symbol.GetChance(Symbol.EnumSymbolType.Cloche) * mod);
+            else if (target.equals("TrefleLuck"))
+                Symbol.SetChance(Symbol.EnumSymbolType.Trefle, Symbol.GetChance(Symbol.EnumSymbolType.Trefle) * mod);
+            else if (target.equals("CoffreLuck"))
+                Symbol.SetChance(Symbol.EnumSymbolType.Coffre, Symbol.GetChance(Symbol.EnumSymbolType.Coffre) * mod);
+            else if (target.equals("DiamantLuck"))
+                Symbol.SetChance(Symbol.EnumSymbolType.Diamant, Symbol.GetChance(Symbol.EnumSymbolType.Diamant) * mod);
+            else if (target.equals("SeptLuck"))
+                Symbol.SetChance(Symbol.EnumSymbolType.Sept, Symbol.GetChance(Symbol.EnumSymbolType.Sept) * mod);
+
+            // --- Globals ---
+            else if (target.equals("GlobalValue"))
+                Symbol.SetSymbolGlobalValueMultiplier(Symbol.GetSymbolGlobalValueMultiplier() * mod);
+            else if (target.equals("GlobalMult"))
+                Pattern.SetGlobalMultiplier(Pattern.GetGlobalMultiplier() * mod);
+
+            // --- Pattern Multipliers ---
+            else if (target.equals("Horizontal3Mult"))
+                Pattern.SetMultiplier(Pattern.PatternType.horizontal3,
+                        Pattern.GetMultiplier(Pattern.PatternType.horizontal3) * mod);
+            else if (target.equals("Horizontal4Mult"))
+                Pattern.SetMultiplier(Pattern.PatternType.horizontal4,
+                        Pattern.GetMultiplier(Pattern.PatternType.horizontal4) * mod);
+            else if (target.equals("Horizontal5Mult"))
+                Pattern.SetMultiplier(Pattern.PatternType.horizontal5,
+                        Pattern.GetMultiplier(Pattern.PatternType.horizontal5) * mod);
+            else if (target.equals("Vertical3Mult"))
+                Pattern.SetMultiplier(Pattern.PatternType.vertical3,
+                        Pattern.GetMultiplier(Pattern.PatternType.vertical3) * mod);
+            else if (target.equals("DiagonalMult"))
+                Pattern.SetMultiplier(Pattern.PatternType.diagonal,
+                        Pattern.GetMultiplier(Pattern.PatternType.diagonal) * mod);
+            else if (target.equals("ZigzagMult"))
+                Pattern.SetMultiplier(Pattern.PatternType.zigzag,
+                        Pattern.GetMultiplier(Pattern.PatternType.zigzag) * mod);
+            else if (target.equals("TriangleMult"))
+                Pattern.SetMultiplier(Pattern.PatternType.triangle,
+                        Pattern.GetMultiplier(Pattern.PatternType.triangle) * mod);
+            else if (target.equals("JackpotMult"))
+                Pattern.SetMultiplier(Pattern.PatternType.jackpot,
+                        Pattern.GetMultiplier(Pattern.PatternType.jackpot) * mod);
+        }
     }
 
     public int getSpinsLeft() {

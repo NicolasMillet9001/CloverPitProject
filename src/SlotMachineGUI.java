@@ -30,11 +30,12 @@ public class SlotMachineGUI extends JFrame {
     private final String CARD_SHOP = "SHOP";
     private boolean isInfoScreenVisible = false;
     private boolean isShopScreenVisible = false;
+    private boolean isInventoryScreenVisible = false;
+    private final String CARD_INVENTORY = "INVENTORY";
 
-    // --- Panel Infos (Déclaré ici pour pouvoir l'appeler) ---
-    // --- Panel Infos (Déclaré ici pour pouvoir l'appeler) ---
     private InfoPanel infoPanel;
     private ShopPanel shopPanel;
+    private InventoryPanel inventoryPanel;
 
     public SlotMachineGUI() {
         slotMachine = new SlotMachine();
@@ -63,16 +64,17 @@ public class SlotMachineGUI extends JFrame {
         mainContainer = new JPanel(cardLayout);
 
         // Création des écrans
-        // Création des écrans
         JPanel gamePanel = new SlotMachinePanel();
-        infoPanel = new InfoPanel(panelSymbolManager); // On utilise le manager dédié au panel
+        infoPanel = new InfoPanel(panelSymbolManager);
         shopPanel = new ShopPanel(slotMachine,
                 () -> repaint(),
                 () -> toggleShopScreen());
+        inventoryPanel = new InventoryPanel(slotMachine, this::toggleInventoryScreen);
 
         mainContainer.add(gamePanel, CARD_GAME);
         mainContainer.add(infoPanel, CARD_INFO);
         mainContainer.add(shopPanel, CARD_SHOP);
+        mainContainer.add(inventoryPanel, CARD_INVENTORY);
 
         // --- 2. BOUTONS ---
         JPanel buttonPanel = new JPanel();
@@ -87,6 +89,14 @@ public class SlotMachineGUI extends JFrame {
         spinButton.setFocusPainted(false);
         spinButton.addActionListener(e -> startSpin());
 
+        JButton inventoryButton = new JButton("BAC");
+        inventoryButton.setPreferredSize(new Dimension(80, 50));
+        inventoryButton.setFont(new Font("Arial", Font.BOLD, 20));
+        inventoryButton.setBackground(new Color(139, 69, 19)); // Saddle Brown
+        inventoryButton.setForeground(Color.WHITE);
+        inventoryButton.setFocusPainted(false);
+        inventoryButton.addActionListener(e -> toggleInventoryScreen());
+
         infoButton = new JButton("?");
         infoButton.setPreferredSize(new Dimension(50, 50));
         infoButton.setFont(new Font("Arial", Font.BOLD, 20));
@@ -95,22 +105,12 @@ public class SlotMachineGUI extends JFrame {
         infoButton.setFocusPainted(false);
         infoButton.addActionListener(e -> toggleInfoScreen());
 
-        // shopButton = new JButton("SHOP");
-        // shopButton.setPreferredSize(new Dimension(100, 50));
-        // shopButton.setFont(new Font("Arial", Font.BOLD, 20));
-        // shopButton.setBackground(new Color(255, 140, 0)); // Dark Orange
-        // shopButton.setForeground(Color.WHITE);
-        // shopButton.setFocusPainted(false);
-        // shopButton.addActionListener(e -> toggleShopScreen());
-        // buttonPanel.add(shopButton); // Removed per user request
-
+        buttonPanel.add(inventoryButton);
         buttonPanel.add(spinButton);
         buttonPanel.add(infoButton);
 
         // Auto-Open Shop Listener
         slotMachine.setOnShopOpenListener(() -> {
-            // Use SwingUtilities to be safe, though usually this callback originates from
-            // spin -> GUI thread anyway
             SwingUtilities.invokeLater(() -> {
                 if (!isShopScreenVisible) {
                     toggleShopScreen();
@@ -122,58 +122,111 @@ public class SlotMachineGUI extends JFrame {
         add(buttonPanel, BorderLayout.SOUTH);
     }
 
-    private void toggleInfoScreen() {
-        if (isInfoScreenVisible) {
-            // BACK TO GAME
-            cardLayout.show(mainContainer, CARD_GAME);
-            infoButton.setText("?");
-            infoButton.setBackground(new Color(70, 130, 180));
-            spinButton.setEnabled(true);
+    private void toggleInventoryScreen() {
+        if (isInventoryScreenVisible) {
+            // ClOSING INVENTORY
+            isInventoryScreenVisible = false;
 
-            isInfoScreenVisible = false;
+            if (isShopScreenVisible) {
+                // Return to Shop
+                cardLayout.show(mainContainer, CARD_SHOP);
+                // Spin button stays disabled in shop
+            } else {
+                // Return to Game
+                cardLayout.show(mainContainer, CARD_GAME);
+                spinButton.setEnabled(true);
+            }
             mainContainer.requestFocusInWindow();
         } else {
-            // SHOW INFO
-            // Ensure shop is closed if open handling (though buttons handle this)
-            if (isShopScreenVisible)
-                toggleShopScreen();
+            // OPENING INVENTORY
+            // If Info is open, close it (visually) or just switch card
+            if (isInfoScreenVisible) {
+                isInfoScreenVisible = false;
+                infoButton.setText("?");
+                infoButton.setBackground(new Color(70, 130, 180));
+            }
+
+            inventoryPanel.refreshInventory();
+            cardLayout.show(mainContainer, CARD_INVENTORY);
+            isInventoryScreenVisible = true;
+            spinButton.setEnabled(false);
+        }
+    }
+
+    private void toggleInfoScreen() {
+        if (isInfoScreenVisible) {
+            // CLOSING INFO
+            isInfoScreenVisible = false;
+            infoButton.setText("?");
+            infoButton.setBackground(new Color(70, 130, 180));
+
+            if (isInventoryScreenVisible) {
+                // If inventory was active (unlikely as we usually toggle one or other), go back
+                // there
+                cardLayout.show(mainContainer, CARD_INVENTORY);
+            } else if (isShopScreenVisible) {
+                // Return to Shop
+                cardLayout.show(mainContainer, CARD_SHOP);
+            } else {
+                // Return to Game
+                cardLayout.show(mainContainer, CARD_GAME);
+                spinButton.setEnabled(true);
+            }
+            mainContainer.requestFocusInWindow();
+        } else {
+            // OPENING INFO
+            if (isInventoryScreenVisible) {
+                isInventoryScreenVisible = false;
+            }
 
             infoPanel.updateInfo();
-
             cardLayout.show(mainContainer, CARD_INFO);
+
+            isInfoScreenVisible = true;
             infoButton.setText("X");
             infoButton.setBackground(new Color(200, 50, 50));
             spinButton.setEnabled(false);
-
-            isInfoScreenVisible = true;
         }
     }
 
     private void toggleShopScreen() {
         if (isShopScreenVisible) {
-            // BACK TO GAME
-            cardLayout.show(mainContainer, CARD_GAME);
-
-            spinButton.setEnabled(true);
-            infoButton.setEnabled(true);
+            // CLOSING SHOP (End of shopping)
             isShopScreenVisible = false;
 
-            // Start next round on close
-            slotMachine.startNewRound();
+            // Reset overlays if any
+            isInfoScreenVisible = false;
+            isInventoryScreenVisible = false;
 
+            // Reset buttons
+            infoButton.setText("?");
+            infoButton.setBackground(new Color(70, 130, 180));
+
+            // BACK TO GAME & NEW ROUND
+            cardLayout.show(mainContainer, CARD_GAME);
+            spinButton.setEnabled(true);
+            infoButton.setEnabled(true);
+
+            slotMachine.startNewRound();
             mainContainer.requestFocusInWindow();
         } else {
-            // SHOW SHOP
-            shopPanel.refreshItems(); // Refresh items in UI
+            // OPENING SHOP
+            isShopScreenVisible = true;
+            shopPanel.refreshItems();
 
-            if (isInfoScreenVisible)
-                toggleInfoScreen();
+            // If Info/Inventory were open, we switch to Shop,
+            // but we might want to close them to show the shop first?
+            // Usually Shop opens automatically so we assume we show it.
+            isInfoScreenVisible = false;
+            isInventoryScreenVisible = false;
+            infoButton.setText("?");
+            infoButton.setBackground(new Color(70, 130, 180));
 
             cardLayout.show(mainContainer, CARD_SHOP);
 
             spinButton.setEnabled(false);
-            infoButton.setEnabled(false);
-            isShopScreenVisible = true;
+            // We allow Info and Inventory buttons to work in Shop!
+            infoButton.setEnabled(true);
         }
     }
 

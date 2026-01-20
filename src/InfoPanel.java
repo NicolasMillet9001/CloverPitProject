@@ -62,6 +62,10 @@ public class InfoPanel extends JPanel {
             addSymbolRow(type);
         }
 
+        // GLOBAL SYMBOL MULTIPLIER
+        addGlobalMultiplier(symbolsContainer,
+                "Global Multiplier: x" + String.format("%.2f", Symbol.GetSymbolGlobalValueMultiplier()));
+
         // 3. Colonne DROITE (Patterns)
         addTitle(patternsContainer, "--- PATTERNS ---");
         addHeader(patternsContainer, "FORME", "NOM", "MULT");
@@ -153,6 +157,10 @@ public class InfoPanel extends JPanel {
                 pFull[i][j] = true;
         double mJack = Pattern.GetMultiplier(Pattern.PatternType.jackpot);
         addPatternRow(pFull, "JACKPOT", "x " + mJack);
+
+        // GLOBAL PATTERN MULTIPLIER
+        addGlobalMultiplier(patternsContainer,
+                "Global Multiplier: x" + String.format("%.2f", Pattern.GetGlobalMultiplier()));
 
         // Rafraîchissement
         updateLayoutScale();
@@ -300,5 +308,15 @@ public class InfoPanel extends JPanel {
 
         patternsContainer.add(row);
         patternsContainer.add(Box.createVerticalStrut(5));
+    }
+
+    private void addGlobalMultiplier(JPanel p, String text) {
+        JLabel l = new JLabel(text, SwingConstants.CENTER);
+        l.setForeground(new Color(135, 206, 250)); // Light Sky Blue to distinguish
+        l.setAlignmentX(Component.CENTER_ALIGNMENT);
+        textLabels.add(l); // for scaling
+        p.add(Box.createVerticalStrut(15));
+        p.add(l);
+        p.add(Box.createVerticalStrut(15));
     }
 }

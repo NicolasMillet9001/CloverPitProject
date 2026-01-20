@@ -10,8 +10,7 @@ public class Pattern {
 
     public static double PatternGlobalMultiplier = 1;
 
-
-    public enum PatternType{
+    public enum PatternType {
         horizontal3,
         horizontal4,
         horizontal5,
@@ -22,8 +21,8 @@ public class Pattern {
         jackpot
     }
 
-    public static double GetMultiplier(PatternType patternType){
-        switch (patternType){
+    public static double GetMultiplier(PatternType patternType) {
+        switch (patternType) {
             case horizontal3:
                 return horizontal3mult;
             case horizontal4:
@@ -45,8 +44,8 @@ public class Pattern {
         }
     }
 
-    public static void SetMultiplier(PatternType patternType, double multiplier){
-        switch (patternType){
+    public static void SetMultiplier(PatternType patternType, double multiplier) {
+        switch (patternType) {
             case horizontal3:
                 horizontal3mult = multiplier;
                 break;
@@ -76,13 +75,15 @@ public class Pattern {
         }
     }
 
-    public static double GetGlobalMultiplier(){
+    public static double GetGlobalMultiplier() {
         return PatternGlobalMultiplier;
     }
-    public static void SetGlobalMultiplier(double multiplier){
+
+    public static void SetGlobalMultiplier(double multiplier) {
         PatternGlobalMultiplier = multiplier;
     }
-    public static void AddGlobalMultiplier(double multiplier){
+
+    public static void AddGlobalMultiplier(double multiplier) {
         PatternGlobalMultiplier += multiplier;
     }
 }

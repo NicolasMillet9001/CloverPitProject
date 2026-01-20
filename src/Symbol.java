@@ -1,6 +1,5 @@
 import java.util.Random;
 
-
 public class Symbol {
     public static double CitronChance = 19.4;
     public static double CeriseChance = 19.4;
@@ -19,7 +18,6 @@ public class Symbol {
     public static double SeptValue = 7;
 
     public static double SymbolGlobalValueMultiplier = 1;
-
 
     public enum EnumSymbolType {
         Citron,
@@ -43,22 +41,28 @@ public class Symbol {
 
         double cumulativeChance = 0;
         cumulativeChance += CitronChance;
-        if (randomValue < cumulativeChance) return EnumSymbolType.Citron;
+        if (randomValue < cumulativeChance)
+            return EnumSymbolType.Citron;
 
         cumulativeChance += CeriseChance;
-        if (randomValue < cumulativeChance) return EnumSymbolType.Cerise;
+        if (randomValue < cumulativeChance)
+            return EnumSymbolType.Cerise;
 
         cumulativeChance += TrefleChance;
-        if (randomValue < cumulativeChance) return EnumSymbolType.Trefle;
+        if (randomValue < cumulativeChance)
+            return EnumSymbolType.Trefle;
 
         cumulativeChance += ClocheChance;
-        if (randomValue < cumulativeChance) return EnumSymbolType.Cloche;
+        if (randomValue < cumulativeChance)
+            return EnumSymbolType.Cloche;
 
         cumulativeChance += DiamantChance;
-        if (randomValue < cumulativeChance) return EnumSymbolType.Diamant;
+        if (randomValue < cumulativeChance)
+            return EnumSymbolType.Diamant;
 
         cumulativeChance += CoffreChance;
-        if (randomValue < cumulativeChance) return EnumSymbolType.Coffre;
+        if (randomValue < cumulativeChance)
+            return EnumSymbolType.Coffre;
 
         return EnumSymbolType.Sept; // Retourne 7 si aucune condition n'est remplie
     }
@@ -67,68 +71,160 @@ public class Symbol {
         return this.nom;
     }
 
-    public void Affiche(){
-        System.out.printf(GetSymbolType()+" ");
+    public void Affiche() {
+        System.out.printf(GetSymbolType() + " ");
     }
 
     public static double GetChance(EnumSymbolType symbol) {
         switch (symbol) {
-            case Citron: return CitronChance;
-            case Cerise: return CeriseChance;
-            case Trefle: return TrefleChance;
-            case Cloche: return ClocheChance;
-            case Diamant: return DiamantChance;
-            case Coffre: return CoffreChance;
-            case Sept: return SeptChance;
-            default: return 0;
+            case Citron:
+                return CitronChance;
+            case Cerise:
+                return CeriseChance;
+            case Trefle:
+                return TrefleChance;
+            case Cloche:
+                return ClocheChance;
+            case Diamant:
+                return DiamantChance;
+            case Coffre:
+                return CoffreChance;
+            case Sept:
+                return SeptChance;
+            default:
+                return 0;
         }
     }
 
     public static double GetValue(EnumSymbolType symbol) {
         switch (symbol) {
-            case Citron: return CitronValue;
-            case Cerise: return CeriseValue;
-            case Trefle: return TrefleValue;
-            case Cloche: return ClocheValue;
-            case Diamant: return DiamantValue;
-            case Coffre: return CoffreValue;
-            case Sept: return SeptValue;
-            default: return 0;
+            case Citron:
+                return CitronValue;
+            case Cerise:
+                return CeriseValue;
+            case Trefle:
+                return TrefleValue;
+            case Cloche:
+                return ClocheValue;
+            case Diamant:
+                return DiamantValue;
+            case Coffre:
+                return CoffreValue;
+            case Sept:
+                return SeptValue;
+            default:
+                return 0;
         }
     }
 
     public static void SetChance(EnumSymbolType symbol, double chance) {
         switch (symbol) {
-            case Citron: CitronChance = chance; break;
-            case Cerise: CeriseChance = chance; break;
-            case Trefle: TrefleChance = chance; break;
-            case Cloche: ClocheChance = chance; break;
-            case Diamant: DiamantChance = chance; break;
-            case Coffre: CoffreChance = chance; break;
-            case Sept: SeptChance = chance; break;
+            case Citron:
+                CitronChance = chance;
+                break;
+            case Cerise:
+                CeriseChance = chance;
+                break;
+            case Trefle:
+                TrefleChance = chance;
+                break;
+            case Cloche:
+                ClocheChance = chance;
+                break;
+            case Diamant:
+                DiamantChance = chance;
+                break;
+            case Coffre:
+                CoffreChance = chance;
+                break;
+            case Sept:
+                SeptChance = chance;
+                break;
         }
     }
 
     public static void SetValue(EnumSymbolType symbol, double value) {
         switch (symbol) {
-            case Citron: CitronValue = value; break;
-            case Cerise: CeriseValue = value; break;
-            case Trefle: TrefleValue = value; break;
-            case Cloche: ClocheValue = value; break;
-            case Diamant: DiamantValue = value; break;
-            case Coffre: CoffreValue = value; break;
-            case Sept: SeptValue = value; break;
+            case Citron:
+                CitronValue = value;
+                break;
+            case Cerise:
+                CeriseValue = value;
+                break;
+            case Trefle:
+                TrefleValue = value;
+                break;
+            case Cloche:
+                ClocheValue = value;
+                break;
+            case Diamant:
+                DiamantValue = value;
+                break;
+            case Coffre:
+                CoffreValue = value;
+                break;
+            case Sept:
+                SeptValue = value;
+                break;
         }
     }
 
     public static double GetSymbolGlobalValueMultiplier() {
         return SymbolGlobalValueMultiplier;
     }
+
     public static void SetSymbolGlobalValueMultiplier(double multiplier) {
         SymbolGlobalValueMultiplier = multiplier;
     }
+
     public static void AddSymbolGlobalValueMultiplier(double multiplier) {
         SymbolGlobalValueMultiplier += multiplier;
     }
-}
 
+    public static void UpdateChanceSafe(EnumSymbolType targetSymbol, double multiplier) {
+        // 1. Calculate new target chance
+        double currentTargetChance = GetChance(targetSymbol);
+        double newTargetChance = currentTargetChance * multiplier;
+
+        // Cap at 99% to avoid issues, or 100%
+        if (newTargetChance > 99.0)
+            newTargetChance = 99.0;
+        if (newTargetChance < 1.0)
+            newTargetChance = 1.0; // Minimum chance
+
+        // 2. Calculate remaining pool
+        double remainingTotal = 100.0 - newTargetChance;
+
+        // 3. Calculate sum of OTHERS
+        double sumOthers = 0;
+        for (EnumSymbolType type : EnumSymbolType.values()) {
+            if (type != targetSymbol) {
+                sumOthers += GetChance(type);
+            }
+        }
+
+        // 4. Distribute remainingTotal proportional to others' current weight
+        if (sumOthers > 0) {
+            for (EnumSymbolType type : EnumSymbolType.values()) {
+                if (type != targetSymbol) {
+                    double currentChance = GetChance(type);
+                    // Ratio of this symbol within the "others" group
+                    double ratio = currentChance / sumOthers;
+                    double newChance = remainingTotal * ratio;
+                    SetChance(type, newChance);
+                }
+            }
+        } else {
+            // Edge case: others were 0? Distribute evenly?
+            int countOthers = EnumSymbolType.values().length - 1;
+            for (EnumSymbolType type : EnumSymbolType.values()) {
+                if (type != targetSymbol) {
+                    SetChance(type, remainingTotal / countOthers);
+                }
+            }
+        }
+
+        // 5. Set target finally
+        SetChance(targetSymbol, newTargetChance);
+    }
+}

@@ -366,6 +366,7 @@ public class SlotMachine {
             SubstractScore(item.getPrice());
             applyItemEffect(item);
             soldIndices.add(index);
+            inventory.add(item);
             // currentShopItems.remove(index); // Removed to keep item in list
             return true;
         }
@@ -403,17 +404,17 @@ public class SlotMachine {
 
             // --- Symbol Luck ---
             else if (target.equals("CeriseLuck"))
-                Symbol.SetChance(Symbol.EnumSymbolType.Cerise, Symbol.GetChance(Symbol.EnumSymbolType.Cerise) * mod);
+                Symbol.UpdateChanceSafe(Symbol.EnumSymbolType.Cerise, mod);
             else if (target.equals("ClocheLuck"))
-                Symbol.SetChance(Symbol.EnumSymbolType.Cloche, Symbol.GetChance(Symbol.EnumSymbolType.Cloche) * mod);
+                Symbol.UpdateChanceSafe(Symbol.EnumSymbolType.Cloche, mod);
             else if (target.equals("TrefleLuck"))
-                Symbol.SetChance(Symbol.EnumSymbolType.Trefle, Symbol.GetChance(Symbol.EnumSymbolType.Trefle) * mod);
+                Symbol.UpdateChanceSafe(Symbol.EnumSymbolType.Trefle, mod);
             else if (target.equals("CoffreLuck"))
-                Symbol.SetChance(Symbol.EnumSymbolType.Coffre, Symbol.GetChance(Symbol.EnumSymbolType.Coffre) * mod);
+                Symbol.UpdateChanceSafe(Symbol.EnumSymbolType.Coffre, mod);
             else if (target.equals("DiamantLuck"))
-                Symbol.SetChance(Symbol.EnumSymbolType.Diamant, Symbol.GetChance(Symbol.EnumSymbolType.Diamant) * mod);
+                Symbol.UpdateChanceSafe(Symbol.EnumSymbolType.Diamant, mod);
             else if (target.equals("SeptLuck"))
-                Symbol.SetChance(Symbol.EnumSymbolType.Sept, Symbol.GetChance(Symbol.EnumSymbolType.Sept) * mod);
+                Symbol.UpdateChanceSafe(Symbol.EnumSymbolType.Sept, mod);
 
             // --- Globals ---
             else if (target.equals("GlobalValue"))
@@ -459,5 +460,12 @@ public class SlotMachine {
 
     public double getMinScoreToPass() {
         return minScoreToPass;
+    }
+
+    // --- Inventory ---
+    private List<Item> inventory = new ArrayList<>();
+
+    public List<Item> getInventory() {
+        return inventory;
     }
 }

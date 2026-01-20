@@ -261,10 +261,11 @@ public class SlotMachineGUI extends JFrame {
 
             g2d.setColor(Color.WHITE);
             g2d.setFont(new Font("Arial", Font.BOLD, 20));
-            g2d.drawString("Round: " + slotMachine.getCurrentRound(), 20, 30);
+            // g2d.drawString("Round: " + slotMachine.getCurrentRound(), 20, 30); // Hidden
+            // per user request
 
-            // Afficher les lancers restants
-            g2d.drawString("Lancers restants: " + slotMachine.getSpinsLeft(), 20, 60);
+            // Afficher les lancers restants (MOVED TO BOTTOM)
+            // g2d.drawString("Lancers restants: " + slotMachine.getSpinsLeft(), 20, 60);
 
             if (gridToDraw[0][0] != null) {
                 for (int i = 0; i < 3; i++) {
@@ -317,19 +318,11 @@ public class SlotMachineGUI extends JFrame {
             // int scoreW = (int) (REF_SCORE_W * scaleX); // UNUSED
             int scoreH = (int) (REF_SCORE_H * scaleY);
 
-            // Fond du score (Noir semi-transparent) -> RETIRÉ
-            // g2d.setColor(new Color(0, 0, 0, 200));
-            // g2d.fillRoundRect(scoreX, scoreY, scoreW, scoreH, 20, 20);
-
-            // Bordure du score (Or) -> RETIRÉ
-            // g2d.setColor(new Color(255, 215, 0));
-            // g2d.setStroke(new BasicStroke((float) (3 * scaleX)));
-            // g2d.drawRoundRect(scoreX, scoreY, scoreW, scoreH, 20, 20);
-
             // Texte du score
             // On récupère le score (entier)
             int currentScore = (int) slotMachine.GetScore();
-            String scoreText = String.valueOf(currentScore);
+            int minScore = (int) slotMachine.getMinScoreToPass();
+            String scoreText = currentScore + " / " + minScore;
 
             // Police qui s'adapte à la taille
             int fontSize = (int) (30 * scaleY);
@@ -343,15 +336,24 @@ public class SlotMachineGUI extends JFrame {
             int iconY = scoreY + (scoreH - iconSize) / 2;
             int textY = scoreY + ((scoreH - metrics.getHeight()) / 2) + metrics.getAscent();
 
+            int textEndX = scoreX;
+
             if (coinImg != null) {
                 g.drawImage(coinImg, scoreX + 10, iconY, iconSize, iconSize, this);
                 g2d.setColor(Color.WHITE);
                 g2d.drawString(scoreText, scoreX + 10 + iconSize + 10, textY);
+                textEndX = scoreX + 10 + iconSize + 10 + metrics.stringWidth(scoreText);
             } else {
                 // Fallback si pas d'image
                 g2d.setColor(Color.WHITE);
                 g2d.drawString("C: " + scoreText, scoreX + 20, textY);
+                textEndX = scoreX + 20 + metrics.stringWidth("C: " + scoreText);
             }
+
+            // Affichage "Lancers restants" à droite du score
+            String spinsText = "Lancers: " + slotMachine.getSpinsLeft();
+            g2d.setFont(new Font("Arial", Font.BOLD, (int) (20 * scaleY)));
+            g2d.drawString(spinsText, textEndX + 30, textY);
         }
     }
 

@@ -59,14 +59,15 @@ public class SlotMachine {
     }
 
     private double calculateMinScoreForRound(int round) {
-        return 100 * round;
+        return 50 * round;
     }
 
     public void spin() {
         if (spinsLeft <= 0) {
-            // Fin du round, ouvrir le shop
+            // Fin du round, vérifier résultat
             checkRoundResult();
-            openShop();
+            // openShop(); // FIX: Removed duplicate/incorrect call. checkRoundResult
+            // handles it.
             return;
         }
         spinsLeft--;
@@ -253,7 +254,7 @@ public class SlotMachine {
         this.currentRound = 1;
         this.spinsLeft = maxSpinsPerRound;
         this.score = 0;
-        this.minScoreToPass = 100; // Réinitialiser le score minimum
+        this.minScoreToPass = calculateMinScoreForRound(currentRound - 1); // Fix: Recalculate correctly
         JOptionPane.showMessageDialog(null, "Partie perdue ! Recommencez depuis le début.", "Fin de partie",
                 JOptionPane.INFORMATION_MESSAGE);
     }

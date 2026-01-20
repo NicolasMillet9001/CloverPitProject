@@ -1,18 +1,17 @@
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 
 public class ShopPanel extends JPanel {
     private SlotMachine slotMachine;
     private JPanel centerContainer;
     private BufferedImage coinIcon;
     private Runnable onRerollCallback;
-    private Runnable onCloseCallback; // To refresh main GUI if needed
+    private Runnable onCloseCallback;
     private JLabel moneyLabel;
 
     public ShopPanel(SlotMachine slotMachine, Runnable onRerollCallback, Runnable onCloseCallback) {
@@ -29,44 +28,32 @@ public class ShopPanel extends JPanel {
             e.printStackTrace();
         }
 
-        // Header Panel (Title + Money)
-        JPanel headerPanel = new JPanel(new BorderLayout());
-        headerPanel.setOpaque(false);
-        headerPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 20, 0));
+        initHeader();
 
-        JLabel titleLabel = new JLabel("LUCKY CHARMS", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Stencil", Font.BOLD, 48));
-        titleLabel.setForeground(new Color(210, 180, 140));
-        headerPanel.add(titleLabel, BorderLayout.CENTER);
-
-        // Money Label
-        moneyLabel = new JLabel("0");
-        moneyLabel.setFont(new Font("Monospaced", Font.BOLD, 24));
-        moneyLabel.setForeground(Color.WHITE);
-        moneyLabel.setHorizontalAlignment(SwingConstants.CENTER);
-
-        JPanel moneyPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        moneyPanel.setOpaque(false);
-        moneyPanel.add(moneyLabel);
-
-        // Add coin icon to money label initially if loaded
-        if (coinIcon != null) {
-            moneyLabel.setIcon(new ImageIcon(coinIcon.getScaledInstance(30, 30, Image.SCALE_SMOOTH)));
-            moneyLabel.setHorizontalTextPosition(SwingConstants.LEFT);
-            moneyLabel.setIconTextGap(10);
-        }
-
-        headerPanel.add(moneyPanel, BorderLayout.EAST);
-
-        add(headerPanel, BorderLayout.NORTH);
-
-        // Center Container for Items
-        centerContainer = new JPanel();
-        centerContainer.setLayout(new BoxLayout(centerContainer, BoxLayout.Y_AXIS));
+        // Center Container uses WrapLayout
+        centerContainer = new JPanel(new WrapLayout(FlowLayout.CENTER, 30, 30));
         centerContainer.setOpaque(false);
-        add(centerContainer, BorderLayout.CENTER);
+        // Important: preferred size helps constraint panel know target size
+        centerContainer.setPreferredSize(new Dimension(600, 600));
 
-        // Bottom - Reroll Button
+        // Constraint Panel to enforce max width for 3 items on wide screens
+        JPanel constraintPanel = new JPanel(new GridBagLayout());
+        constraintPanel.setOpaque(false);
+        constraintPanel.add(centerContainer);
+
+        JScrollPane scrollPane = new JScrollPane(constraintPanel);
+        scrollPane.setOpaque(false);
+        scrollPane.getViewport().setOpaque(false);
+        scrollPane.setBorder(null);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(16);
+
+        // Hide scrollbar visual (size 0) but keep functionality
+        scrollPane.getVerticalScrollBar().setPreferredSize(new Dimension(0, 0));
+        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+
+        add(scrollPane, BorderLayout.CENTER);
+
+        // Bottom - Buttons
         JPanel bottomPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 10));
         bottomPanel.setOpaque(false);
         bottomPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 20, 0));
@@ -104,31 +91,60 @@ public class ShopPanel extends JPanel {
         refreshItems();
     }
 
+    private void initHeader() {
+        // Header Panel using JLayeredPane for true centering
+        JLayeredPane headerLayered = new JLayeredPane();
+        headerLayered.setPreferredSize(new Dimension(800, 100)); // Base size
+
+        // 1. Title (Centered in the whole pane)
+        JLabel titleLabel = new JLabel("LUCKY CHARMS", SwingConstants.CENTER);
+        titleLabel.setFont(new Font("Stencil", Font.BOLD, 48));
+        titleLabel.setForeground(new Color(210, 180, 140));
+        titleLabel.setBounds(0, 0, 800, 100);
+
+        // 2. Money (Right aligned)
+        moneyLabel = new JLabel("0");
+        moneyLabel.setFont(new Font("Monospaced", Font.BOLD, 24));
+        moneyLabel.setForeground(Color.WHITE);
+        moneyLabel.setHorizontalAlignment(SwingConstants.RIGHT);
+
+        if (coinIcon != null) {
+            moneyLabel.setIcon(new ImageIcon(coinIcon.getScaledInstance(30, 30, Image.SCALE_SMOOTH)));
+            moneyLabel.setHorizontalTextPosition(SwingConstants.LEFT);
+            moneyLabel.setIconTextGap(10);
+        }
+
+        JPanel moneyPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        moneyPanel.setOpaque(false);
+        moneyPanel.add(moneyLabel);
+        moneyPanel.setBounds(0, 0, 800, 100);
+
+        headerLayered.add(titleLabel, JLayeredPane.DEFAULT_LAYER);
+        headerLayered.add(moneyPanel, JLayeredPane.PALETTE_LAYER);
+
+        // Resize listener to keep components aligned
+        headerLayered.addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentResized(java.awt.event.ComponentEvent evt) {
+                int w = headerLayered.getWidth();
+                int h = headerLayered.getHeight();
+                titleLabel.setBounds(0, 0, w, h);
+                moneyPanel.setBounds(0, 25, w, h); // Offset slightly down
+            }
+        });
+
+        add(headerLayered, BorderLayout.NORTH);
+    }
+
     public void refreshItems() {
         centerContainer.removeAll();
         updateMoneyDisplay();
 
         List<Item> items = slotMachine.getCurrentShopItems();
 
-        JPanel row1 = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 0));
-        row1.setOpaque(false);
-        JPanel row2 = new JPanel(new FlowLayout(FlowLayout.CENTER, 30, 0));
-        row2.setOpaque(false);
-
         for (int i = 0; i < items.size(); i++) {
             JPanel itemPanel = createItemPanel(items.get(i), i);
-            if (i < 2) {
-                row1.add(itemPanel);
-            } else {
-                row2.add(itemPanel);
-            }
+            centerContainer.add(itemPanel);
         }
-
-        centerContainer.add(Box.createVerticalGlue());
-        centerContainer.add(row1);
-        centerContainer.add(Box.createVerticalStrut(30));
-        centerContainer.add(row2);
-        centerContainer.add(Box.createVerticalGlue());
 
         centerContainer.revalidate();
         centerContainer.repaint();
@@ -144,9 +160,8 @@ public class ShopPanel extends JPanel {
         panel.setLayout(new BorderLayout());
         panel.setBackground(new Color(60, 60, 60));
         panel.setBorder(BorderFactory.createLineBorder(new Color(100, 100, 100), 2));
-        panel.setPreferredSize(new Dimension(160, 240)); // Increased size for name
+        panel.setPreferredSize(new Dimension(160, 240));
 
-        // Tooltip logic
         String tooltip = "<html><p width=\"150\">" + item.getDescription() + "</p></html>";
         panel.setToolTipText(tooltip);
 
@@ -178,7 +193,6 @@ public class ShopPanel extends JPanel {
         bottom.setOpaque(false);
         bottom.setToolTipText(tooltip);
 
-        // Price
         JPanel pricePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 5));
         pricePanel.setBackground(Color.BLACK);
         pricePanel.setToolTipText(tooltip);
@@ -192,15 +206,13 @@ public class ShopPanel extends JPanel {
         }
         bottom.add(pricePanel);
 
-        // Buy Button
         JButton buyBtn = new JButton("BUY");
         buyBtn.setFont(new Font("Arial", Font.BOLD, 12));
         buyBtn.addActionListener(e -> {
             if (slotMachine.buyItem(index)) {
-                // Item bought
                 refreshItems();
                 if (onRerollCallback != null)
-                    onRerollCallback.run(); // Update credits in main UI
+                    onRerollCallback.run();
             } else {
                 JOptionPane.showMessageDialog(ShopPanel.this, "Not enough coins!");
             }
@@ -210,5 +222,98 @@ public class ShopPanel extends JPanel {
         panel.add(bottom, BorderLayout.SOUTH);
 
         return panel;
+    }
+
+    /**
+     * FlowLayout subclass that fully supports wrapping of components.
+     */
+    public class WrapLayout extends FlowLayout {
+        private Dimension preferredLayoutSize;
+
+        public WrapLayout() {
+            super();
+        }
+
+        public WrapLayout(int align) {
+            super(align);
+        }
+
+        public WrapLayout(int align, int hgap, int vgap) {
+            super(align, hgap, vgap);
+        }
+
+        @Override
+        public Dimension preferredLayoutSize(Container target) {
+            return layoutSize(target, true);
+        }
+
+        @Override
+        public Dimension minimumLayoutSize(Container target) {
+            Dimension minimum = layoutSize(target, false);
+            minimum.width -= (getHgap() + 1);
+            return minimum;
+        }
+
+        private Dimension layoutSize(Container target, boolean preferred) {
+            synchronized (target.getTreeLock()) {
+                int targetWidth = target.getSize().width;
+
+                if (targetWidth == 0)
+                    targetWidth = Integer.MAX_VALUE;
+
+                int hgap = getHgap();
+                int vgap = getVgap();
+                Insets insets = target.getInsets();
+                int horizontalInsetsAndGap = insets.left + insets.right + (hgap * 2);
+                int maxWidth = targetWidth - horizontalInsetsAndGap;
+
+                Dimension dim = new Dimension(0, 0);
+                int rowWidth = 0;
+                int rowHeight = 0;
+
+                int nmembers = target.getComponentCount();
+
+                for (int i = 0; i < nmembers; i++) {
+                    Component m = target.getComponent(i);
+
+                    if (m.isVisible()) {
+                        Dimension d = preferred ? m.getPreferredSize() : m.getMinimumSize();
+
+                        if (rowWidth + d.width > maxWidth) {
+                            addRow(dim, rowWidth, rowHeight);
+                            rowWidth = 0;
+                            rowHeight = 0;
+                        }
+
+                        if (rowWidth != 0) {
+                            rowWidth += hgap;
+                        }
+
+                        rowWidth += d.width;
+                        rowHeight = Math.max(rowHeight, d.height);
+                    }
+                }
+
+                addRow(dim, rowWidth, rowHeight);
+
+                dim.width += horizontalInsetsAndGap;
+                dim.height += insets.top + insets.bottom + vgap * 2;
+
+                Container scrollPane = SwingUtilities.getAncestorOfClass(JScrollPane.class, target);
+                if (scrollPane != null && target.isValid()) {
+                    dim.width -= (hgap + 1);
+                }
+
+                return dim;
+            }
+        }
+
+        private void addRow(Dimension dim, int rowWidth, int rowHeight) {
+            dim.width = Math.max(dim.width, rowWidth);
+            if (dim.height > 0) {
+                dim.height += getVgap();
+            }
+            dim.height += rowHeight;
+        }
     }
 }

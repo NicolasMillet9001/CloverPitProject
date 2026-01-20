@@ -38,7 +38,7 @@ public class SymbolManager {
 
             for (int i = 0; i < symbolsFull.length; i++) {
                 String resourcePath = "/" + pathPrefix + symbolsFull[i];
-                var resource = getClass().getResource(resourcePath);
+                java.net.URL resource = getClass().getResource(resourcePath);
                 if (resource != null) {
                     symbolImages.put(commonNames[i], ImageIO.read(resource));
                 } else {

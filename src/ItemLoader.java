@@ -104,7 +104,7 @@ public class ItemLoader {
         // item types: SymbolValueModifier, SymbolChanceModifier (maybe?),
         // PatternMultiplierModifier
 
-        String path = "/medias/symbols_shop/SymbolGoldenChest.png"; // Default
+        String path = ""; // Default
 
         // Heuristic based on target stats or type
         String type = item.getType();
@@ -126,18 +126,9 @@ public class ItemLoader {
             else if (mainTarget.contains("Sept"))
                 path = "/medias/symbols_shop/SymbolGoldenSeven.png";
             else if (mainTarget.contains("Global"))
-                path = "/medias/symbols_shop/SymbolGoldenChest.png"; // or special?
-            else
-                path = "/medias/symbols_shop/SymbolGoldenLemon.png"; // Fallback generic
-        } else if (type.contains("Multiplier") || type.contains("Chance")) {
-            // Picture (Multiplier) - User said picture is for multiplier.
-            // Chance items? User didn't specify. I'll stick them to Picture or maybe Golden
-            // if they act like 'goodies'.
-            // Let's use Picture for Multiplier as explicit request.
-            // For Chance, maybe Golden too? Or Picture? Let's use Picture for variety if
-            // not value.
-            // Let's stick to: Value -> Golden. Everything else (Multiplier) -> Picture.
+                path = "/medias/symbols_shop/x2.png";
 
+        } else if (type.contains("Chance")) {
             if (mainTarget.contains("Cerise"))
                 path = "/medias/symbols_shop/SymbolPictureCherry.png";
             else if (mainTarget.contains("Cloche"))
@@ -150,13 +141,26 @@ public class ItemLoader {
                 path = "/medias/symbols_shop/SymbolPictureDiamond.png";
             else if (mainTarget.contains("Sept"))
                 path = "/medias/symbols_shop/SymbolPictureSeven.png";
-            else if (type.contains("Pattern")) {
-                // Pattern modifiers don't map clearly to a symbol. Pick random Picture or
-                // specific?
-                // Let's pick a random Picture symbol for generic pattern upgrades to look nice.
-                path = "/medias/symbols_shop/SymbolPictureDiamond.png";
-            } else
-                path = "/medias/symbols_shop/SymbolPictureLemon.png";
+        }
+        else if (type.contains("Pattern")) {
+            if (mainTarget.contains("Horizontal3Mult"))
+                path = "/medias/symbols_shop/PatternHorizontal3.png";
+            else if (mainTarget.contains("Vertical3Mult"))
+                path = "/medias/symbols_shop/PatternVertical3.png";
+            else if (mainTarget.contains("Horizontal4Mult"))
+                path = "/medias/symbols_shop/PatternHorizontal4.png";
+            else if (mainTarget.contains("Horizontal5Mult"))
+                path = "/medias/symbols_shop/PatternHorizontal5.png";
+            else if (mainTarget.contains("DiagonalMult"))
+                path = "/medias/symbols_shop/PatternDiagonal.png";
+            else if (mainTarget.contains("ZigzagMult"))
+                path = "/medias/symbols_shop/PatternZigzag.png";
+            else if (mainTarget.contains("TriangleMult"))
+                path = "/medias/symbols_shop/PatternTriangle.png";
+            else if (mainTarget.contains("JackpotMult"))
+                path = "/medias/symbols_shop/PatternJackpot.png";
+            else
+                path = "/medias/symbols_shop/PatternEye.png";
         }
 
         item.setImagePath(path);

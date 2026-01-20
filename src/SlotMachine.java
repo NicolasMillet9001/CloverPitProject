@@ -12,6 +12,11 @@ public class SlotMachine {
     private int spinsLeft;
     private int currentRound = 1;
     private double minScoreToPass;
+    private double lastSpinGain = 0;
+
+    public double getLastSpinGain() {
+        return lastSpinGain;
+    }
 
     // SHOP LOGIC
     private List<Item> allItems;
@@ -86,6 +91,8 @@ public class SlotMachine {
                 winningCells[i][j] = false; // Reset des gagnants
             }
         }
+
+        double scoreBeforeSpin = this.score;
 
         try {
             // --- Vérification des lignes ---
@@ -227,7 +234,8 @@ public class SlotMachine {
                         winningCells[i][k] = true;
             }
 
-            System.out.println("Score : " + GetScore());
+            this.lastSpinGain = this.score - scoreBeforeSpin;
+            System.out.println("Score : " + GetScore() + " (+" + lastSpinGain + ")");
         } catch (Exception e) {
             System.out.println(e);
         }
@@ -328,13 +336,19 @@ public class SlotMachine {
 
             // Check if we already added an item with this name (to avoid JSON dupes if any)
             if (!addedNames.contains(item.getName())) {
-                currentShopItems.add(item);
+                // IMPORTANT: Create a COPY so we can modify price without changing master list
+                currentShopItems.add(item.copy());
                 addedNames.add(item.getName());
             }
         }
 
-        // If we ran out of unique items but have less than 5, we just show what we
-        // have.
+        // Apply "One Free Item" Rule
+        if (!currentShopItems.isEmpty()) {
+            int randomIdx = new java.util.Random().nextInt(currentShopItems.size());
+            Item freeItem = currentShopItems.get(randomIdx);
+            freeItem.setPrice(0);
+            System.out.println("Promo ! L'objet " + freeItem.getName() + " est gratuit ce tour-ci !");
+        }
     }
 
     public List<Item> getCurrentShopItems() {

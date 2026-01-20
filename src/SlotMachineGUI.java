@@ -248,15 +248,70 @@ public class SlotMachineGUI extends JFrame {
             }
             mainContainer.repaint();
         } else {
-            stopSpin();
+            isSpinning = false;
+            animationTimer.stop();
+            slotMachine.spin();
+
+            // Trigger floating text animation if gain > 0
+            double gain = slotMachine.getLastSpinGain();
+            if (gain > 0) {
+                showFloatingGain(gain);
+            }
+
+            mainContainer.repaint();
+            infoPanel.updateInfo(); // Update info panel to reflect new score
         }
     }
 
-    private void stopSpin() {
-        animationTimer.stop();
-        isSpinning = false;
-        slotMachine.spin();
-        mainContainer.repaint();
+    private void showFloatingGain(double gain) {
+        // Create a label for the floating text
+        JLabel gainLabel = new JLabel("+" + (int) gain, SwingConstants.CENTER); // Cast to int for cleaner look if
+                                                                                // simple integers
+        gainLabel.setFont(new Font("Arial", Font.BOLD, 40));
+        gainLabel.setForeground(Color.YELLOW);
+
+        // Add icon if available
+        try {
+            ImageIcon icon = new ImageIcon(
+                    ImageIO.read(Objects.requireNonNull(getClass().getResource("/medias/coin.png"))));
+            // Resize icon
+            Image img = icon.getImage();
+            Image newimg = img.getScaledInstance(40, 40, java.awt.Image.SCALE_SMOOTH);
+            gainLabel.setIcon(new ImageIcon(newimg));
+        } catch (Exception e) {
+            // fallback text only
+        }
+
+        // Use GlassPane to float over everything
+        JPanel glassPane = (JPanel) getGlassPane();
+        glassPane.setVisible(true);
+        glassPane.setLayout(null); // Absolute positioning
+
+        // Center the label initially
+        int x = (getWidth() - 300) / 2; // Approximate centering
+        int y = getHeight() / 2;
+        gainLabel.setBounds(x, y, 300, 50);
+
+        glassPane.add(gainLabel);
+        glassPane.revalidate();
+        glassPane.repaint();
+
+        // Animate upwards
+        Timer floatTimer = new Timer(50, null);
+        final int[] steps = { 0 };
+        floatTimer.addActionListener(e -> {
+            steps[0]++;
+            gainLabel.setLocation(gainLabel.getX(), gainLabel.getY() - 5); // Move up
+
+            if (steps[0] >= 20) { // After 20 steps (approx 1 sec)
+                floatTimer.stop();
+                glassPane.remove(gainLabel);
+                glassPane.revalidate();
+                glassPane.repaint();
+                glassPane.setVisible(false); // Hide if no other components
+            }
+        });
+        floatTimer.start();
     }
 
     // --- PANNEAU DE JEU AVEC SCORE GRAPHIQUE ---

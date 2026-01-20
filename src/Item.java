@@ -164,6 +164,24 @@ public class Item {
         }
     }
 
+    // Modifie le prix (pour les promos par ex)
+    public void setPrice(int price) {
+        this.price = price;
+    }
+
+    // Crée une copie de l'objet (pour ne pas modifier l'original dans la liste
+    // globale)
+    public Item copy() {
+        Item newItem = new Item(this.name, this.description, this.price, this.type, this.isUnique);
+        newItem.setImagePath(this.imagePath);
+        // Copy lists
+        for (String stat : this.targetStats)
+            newItem.addTargetStat(stat);
+        for (Double mod : this.statsModifiers)
+            newItem.addStatModifier(mod);
+        return newItem;
+    }
+
     @Override
     public String toString() {
         return name + " (" + price + " coins)";

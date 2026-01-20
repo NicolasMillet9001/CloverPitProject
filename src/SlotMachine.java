@@ -8,7 +8,7 @@ public class SlotMachine {
 
     private Symbol[][] Symbols = new Symbol[3][5];
     private boolean[][] winningCells = new boolean[3][5];
-    private double score = 0;
+    private double score = 1000000;
     private int maxSpinsPerRound = 10;
     private int spinsLeft;
     private int currentRound = 1;

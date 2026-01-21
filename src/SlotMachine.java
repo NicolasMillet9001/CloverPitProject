@@ -7,7 +7,7 @@ public class SlotMachine {
 
     private Symbol[][] Symbols = new Symbol[3][5];
     private boolean[][] winningCells = new boolean[3][5];
-    private double score = 1000000;
+    private double score = 0;
     private int maxSpinsPerRound = 10;
     private int spinsLeft;
     private int currentRound = 1;
@@ -22,6 +22,11 @@ public class SlotMachine {
     private List<Item> allItems;
     private List<Item> currentShopItems;
     private java.util.Set<Integer> soldIndices = new java.util.HashSet<>();
+    private boolean isFirstPurchaseMade = false;
+
+    public boolean isFirstPurchaseMade() {
+        return isFirstPurchaseMade;
+    }
 
     public double GetScore() {
         return score;
@@ -269,7 +274,13 @@ public class SlotMachine {
         this.currentRound = 1;
         this.spinsLeft = maxSpinsPerRound;
         this.score = 0;
-        this.minScoreToPass = calculateMinScoreForRound(currentRound - 1); // Fix: Recalculate correctly
+        this.minScoreToPass = calculateMinScoreForRound(currentRound - 1);
+
+        // Clear inventory and shop history
+        inventory.clear();
+        soldIndices.clear();
+        isFirstPurchaseMade = false;
+
         JOptionPane.showMessageDialog(null, "Partie perdue ! Recommencez depuis le début.", "Fin de partie",
                 JOptionPane.INFORMATION_MESSAGE);
     }
@@ -341,14 +352,6 @@ public class SlotMachine {
                 addedNames.add(item.getName());
             }
         }
-
-        // Apply "One Free Item" Rule
-        if (!currentShopItems.isEmpty()) {
-            int randomIdx = new java.util.Random().nextInt(currentShopItems.size());
-            Item freeItem = currentShopItems.get(randomIdx);
-            freeItem.setPrice(0);
-            System.out.println("Promo ! L'objet " + freeItem.getName() + " est gratuit ce tour-ci !");
-        }
     }
 
     public List<Item> getCurrentShopItems() {
@@ -376,12 +379,23 @@ public class SlotMachine {
             return false;
 
         Item item = currentShopItems.get(index);
+
+        // First Purchase Free Rule
+        if (!isFirstPurchaseMade) {
+            isFirstPurchaseMade = true;
+            applyItemEffect(item);
+            soldIndices.add(index);
+            inventory.add(item);
+            System.out.println("First purchase! " + item.getName() + " is free.");
+            return true;
+        }
+
+        // Standard Purchase
         if (score >= item.getPrice()) {
             SubstractScore(item.getPrice());
             applyItemEffect(item);
             soldIndices.add(index);
             inventory.add(item);
-            // currentShopItems.remove(index); // Removed to keep item in list
             return true;
         }
         return false;

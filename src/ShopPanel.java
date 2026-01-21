@@ -208,7 +208,10 @@ public class ShopPanel extends JPanel {
             JPanel pricePanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 5, 0));
             pricePanel.setOpaque(false);
 
-            priceLabel = new JLabel(String.valueOf(item.getPrice()));
+            boolean isFree = !slotMachine.isFirstPurchaseMade();
+            String priceText = isFree ? "0" : String.valueOf(item.getPrice());
+
+            priceLabel = new JLabel(priceText);
             priceLabel.setForeground(new Color(255, 215, 0));
             pricePanel.add(priceLabel);
 
@@ -224,7 +227,7 @@ public class ShopPanel extends JPanel {
             add(pricePanel, gbc);
 
             // 4. Buy Button
-            buyBtn = new JButton("BUY");
+            buyBtn = new JButton(isFree ? "FREE" : "BUY");
 
             boolean isSold = slotMachine.isItemSold(index);
             if (isSold) {

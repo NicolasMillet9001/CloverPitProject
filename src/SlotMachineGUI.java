@@ -204,6 +204,9 @@ public class SlotMachineGUI extends JFrame {
 
             // BACK TO GAME & NEW ROUND
             cardLayout.show(mainContainer, CARD_GAME);
+
+            spinButton.setText("SPIN !");
+            spinButton.setBackground(new Color(50, 205, 50)); // Green
             spinButton.setEnabled(true);
             infoButton.setEnabled(true);
 
@@ -260,6 +263,12 @@ public class SlotMachineGUI extends JFrame {
 
             mainContainer.repaint();
             infoPanel.updateInfo(); // Update info panel to reflect new score
+
+            // Check if round is over (0 spins)
+            if (slotMachine.getSpinsLeft() <= 0) {
+                spinButton.setText("Ouvrir boutique");
+                spinButton.setBackground(new Color(255, 140, 0)); // Dark Orange
+            }
         }
     }
 

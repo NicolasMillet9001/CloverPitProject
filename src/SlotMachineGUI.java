@@ -81,33 +81,48 @@ public class SlotMachineGUI extends JFrame {
         buttonPanel.setBackground(Color.BLACK);
         buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10));
 
-        spinButton = new JButton("SPIN !");
+        spinButton = new JButton("LANCER !");
         spinButton.setPreferredSize(new Dimension(150, 50));
         spinButton.setFont(new Font("Arial", Font.BOLD, 20));
         spinButton.setBackground(new Color(50, 205, 50));
         spinButton.setForeground(Color.WHITE);
         spinButton.setFocusPainted(false);
-        spinButton.addActionListener(e -> startSpin());
+        spinButton.addActionListener(e -> {
+            if (slotMachine.getSpinsLeft() <= 0) {
+                toggleShopScreen();
+            } else {
+                startSpin();
+            }
+        });
 
-        JButton inventoryButton = new JButton("BAC");
-        inventoryButton.setPreferredSize(new Dimension(80, 50));
-        inventoryButton.setFont(new Font("Arial", Font.BOLD, 20));
-        inventoryButton.setBackground(new Color(139, 69, 19)); // Saddle Brown
-        inventoryButton.setForeground(Color.WHITE);
-        inventoryButton.setFocusPainted(false);
-        inventoryButton.addActionListener(e -> toggleInventoryScreen());
+        // Register callback for game reset
+        slotMachine.setOnGameReset(() -> {
+            spinButton.setText("LANCER !");
+            spinButton.setBackground(new Color(50, 205, 50)); // Green
+            cardLayout.show(mainContainer, CARD_GAME);
+        });
 
-        infoButton = new JButton("?");
-        infoButton.setPreferredSize(new Dimension(50, 50));
-        infoButton.setFont(new Font("Arial", Font.BOLD, 20));
+        // Bouton Info & Shop
+        infoButton = new JButton("INFOS");
+        infoButton.setPreferredSize(new Dimension(80, 50));
+        infoButton.setFont(new Font("Arial", Font.BOLD, 14));
         infoButton.setBackground(new Color(70, 130, 180));
         infoButton.setForeground(Color.WHITE);
         infoButton.setFocusPainted(false);
         infoButton.addActionListener(e -> toggleInfoScreen());
 
-        buttonPanel.add(inventoryButton);
-        buttonPanel.add(spinButton);
+        JButton inventoryButton = new JButton("INVENTAIRE");
+        inventoryButton.setPreferredSize(new Dimension(120, 50)); // Wider for longer text
+        inventoryButton.setFont(new Font("Arial", Font.BOLD, 14));
+        inventoryButton.setBackground(new Color(100, 100, 100)); // Gray
+        inventoryButton.setForeground(Color.WHITE);
+        inventoryButton.setFocusPainted(false);
+        inventoryButton.addActionListener(e -> toggleInventoryScreen());
+
+        // Panel bas (Boutons)
         buttonPanel.add(infoButton);
+        buttonPanel.add(spinButton);
+        buttonPanel.add(inventoryButton);
 
         // Auto-Open Shop Listener
         slotMachine.setOnShopOpenListener(() -> {
@@ -205,7 +220,7 @@ public class SlotMachineGUI extends JFrame {
             // BACK TO GAME & NEW ROUND
             cardLayout.show(mainContainer, CARD_GAME);
 
-            spinButton.setText("SPIN !");
+            spinButton.setText("LANCER !");
             spinButton.setBackground(new Color(50, 205, 50)); // Green
             spinButton.setEnabled(true);
             infoButton.setEnabled(true);

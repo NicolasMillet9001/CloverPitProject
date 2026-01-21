@@ -40,7 +40,7 @@ public class InventoryPanel extends JPanel {
         add(scrollPane, BorderLayout.CENTER);
 
         // Bottom
-        JButton closeBtn = new JButton("RETOUR");
+        JButton closeBtn = new JButton("FERMER");
         closeBtn.setFont(new Font("Arial", Font.BOLD, 18));
         closeBtn.setBackground(new Color(100, 100, 100));
         closeBtn.setForeground(Color.WHITE);

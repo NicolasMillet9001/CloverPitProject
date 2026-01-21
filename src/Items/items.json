@@ -197,7 +197,7 @@
   },
   {
     "nom": "Amélioration de la valeur de tous les symboles",
-    "description": "Augmente la valeur des symboles de 100%",
+    "description": "Augmente la valeur des symboles de +1",
     "quality": 4,
     "basePrice": 500,
     "itemType": "SymbolGlobalValueModifier",
@@ -205,7 +205,7 @@
       "GlobalValue"
     ],
     "StatsModifiers": [
-      2
+      1
     ],
     "unique": "false"
   },
@@ -323,7 +323,7 @@
   },
   {
     "nom": "Amélioration du multiplicateur de tous les patterns",
-    "description": "Augmente le multiplicateur des patterns de 100%",
+    "description": "Augmente le multiplicateur des patterns de +1",
     "quality": 4,
     "basePrice": 500,
     "itemType": "PatternGlobalMultiplierModifier",
@@ -331,7 +331,7 @@
       "GlobalMult"
     ],
     "StatsModifiers": [
-      2
+      1
     ],
     "unique": "false"
   }

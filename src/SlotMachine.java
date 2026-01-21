@@ -540,9 +540,9 @@ public class SlotMachine {
 
             // --- Globals ---
             else if (target.equals("GlobalValue"))
-                Symbol.SetSymbolGlobalValueMultiplier(Symbol.GetSymbolGlobalValueMultiplier() * mod);
+                Symbol.AddSymbolGlobalValueMultiplier(mod);
             else if (target.equals("GlobalMult"))
-                Pattern.SetGlobalMultiplier(Pattern.GetGlobalMultiplier() * mod);
+                Pattern.AddGlobalMultiplier(mod);
 
             // --- Pattern Multipliers ---
             else if (target.equals("Horizontal3Mult"))

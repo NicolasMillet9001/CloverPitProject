@@ -291,6 +291,7 @@ public class SlotMachine {
         inventory.clear();
         soldIndices.clear();
         isFirstPurchaseMade = false;
+        rerollCost = 10; // Reset reroll cost
 
         if (onGameReset != null) {
             onGameReset.run();
@@ -381,9 +382,16 @@ public class SlotMachine {
         return soldIndices.contains(index);
     }
 
+    private int rerollCost = 10;
+
+    public int getRerollCost() {
+        return rerollCost;
+    }
+
     public boolean rerollShop() {
-        if (score >= 10) {
-            SubstractScore(10);
+        if (score >= rerollCost) {
+            SubstractScore(rerollCost);
+            rerollCost++; // Increase cost for next time
             generateShopItems();
             return true;
         }

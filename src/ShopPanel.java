@@ -11,6 +11,7 @@ import java.awt.image.BufferedImage;
 public class ShopPanel extends JPanel {
     private SlotMachine slotMachine;
     private JPanel centerContainer;
+    private JButton rerollButton; // Promoted to field for updates
     private BufferedImage coinIcon;
     private Runnable onRerollCallback;
     private Runnable onCloseCallback;
@@ -45,7 +46,7 @@ public class ShopPanel extends JPanel {
         bottomPanel.setOpaque(false);
         bottomPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 20, 0));
 
-        JButton rerollButton = new JButton("RELANCER (10 Pièces)");
+        rerollButton = new JButton("RELANCER (10 Pièces)"); // Instantiated as field
         rerollButton.setFont(new Font("Arial", Font.BOLD, 20));
         rerollButton.setBackground(new Color(139, 69, 19)); // SaddleBrown
         rerollButton.setForeground(Color.WHITE);
@@ -125,6 +126,11 @@ public class ShopPanel extends JPanel {
     public void refreshItems() {
         centerContainer.removeAll();
         updateMoneyDisplay();
+
+        // Update Reroll Button Text with current cost
+        if (rerollButton != null) {
+            rerollButton.setText("RELANCER (" + slotMachine.getRerollCost() + " Pièces)");
+        }
 
         List<Item> items = slotMachine.getCurrentShopItems();
 

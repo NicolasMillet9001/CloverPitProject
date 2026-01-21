@@ -46,7 +46,8 @@ public class SlotMachine {
     }
 
     public void AddScore(int nbOfSymbols, Symbol symbol, Pattern.PatternType pattern) {
-        double scoreToAdd = nbOfSymbols * (Symbol.GetValue(symbol.GetSymbolType()) * Symbol.GetSymbolGlobalValueMultiplier())
+        double scoreToAdd = nbOfSymbols
+                * (Symbol.GetValue(symbol.GetSymbolType()) * Symbol.GetSymbolGlobalValueMultiplier())
                 * (Pattern.GetMultiplier(pattern) * Pattern.GetGlobalMultiplier());
 
         this.score += scoreToAdd;
@@ -271,7 +272,8 @@ public class SlotMachine {
     private void checkRoundResult() {
         if (score >= minScoreToPass) {
             System.out.println("Round " + currentRound + " réussi ! Ouverture du shop...");
-            generateShopItems(); // Ensure shop is populated
+            isFirstPurchaseMade = false; // Reset rule ONLY when winning a round
+            // generateShopItems(); // Redundant, openShop() calls it
             openShop();
         } else {
             System.out.println("Round " + currentRound + " échoué ! La partie est perdue.");
@@ -367,7 +369,8 @@ public class SlotMachine {
         }
 
         // Reset First Purchase Free rule for the new shop session
-        isFirstPurchaseMade = false;
+        // isFirstPurchaseMade = false; // MOVED to checkRoundResult to avoid reset on
+        // reroll
     }
 
     public List<Item> getCurrentShopItems() {
@@ -433,7 +436,9 @@ public class SlotMachine {
             double mod = modifiers.get(i);
 
             // --- Symbol Values ---
-            if (target.equals("CeriseValue"))
+            if (target.equals("CitronValue"))
+                Symbol.SetValue(Symbol.EnumSymbolType.Citron, Symbol.GetValue(Symbol.EnumSymbolType.Citron) * mod);
+            else if (target.equals("CeriseValue"))
                 Symbol.SetValue(Symbol.EnumSymbolType.Cerise, Symbol.GetValue(Symbol.EnumSymbolType.Cerise) * mod);
             else if (target.equals("ClocheValue"))
                 Symbol.SetValue(Symbol.EnumSymbolType.Cloche, Symbol.GetValue(Symbol.EnumSymbolType.Cloche) * mod);
@@ -447,6 +452,8 @@ public class SlotMachine {
                 Symbol.SetValue(Symbol.EnumSymbolType.Sept, Symbol.GetValue(Symbol.EnumSymbolType.Sept) * mod);
 
             // --- Symbol Luck ---
+            else if (target.equals("CitronLuck"))
+                Symbol.UpdateChanceSafe(Symbol.EnumSymbolType.Citron, mod);
             else if (target.equals("CeriseLuck"))
                 Symbol.UpdateChanceSafe(Symbol.EnumSymbolType.Cerise, mod);
             else if (target.equals("ClocheLuck"))

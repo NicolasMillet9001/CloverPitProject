@@ -77,7 +77,14 @@ public class ItemLoader {
             String type = extractString(json, "itemType");
             boolean unique = extractBool(json, "unique");
 
-            Item item = new Item(name, desc, price, type, unique);
+            // Extract quality, defaulting to 1 if not found
+            int quality = extractInt(json, "quality");
+            if (quality == 0)
+                quality = extractInt(json, "qualité"); // Try French key
+            if (quality == 0)
+                quality = 1; // Default to Common
+
+            Item item = new Item(name, desc, price, type, unique, quality);
 
             // Lists
             List<String> targets = extractStringList(json, "targetStats");
@@ -145,8 +152,7 @@ public class ItemLoader {
                 path = "/medias/symbols_shop/SymbolPictureDiamond.png";
             else if (mainTarget.contains("Sept"))
                 path = "/medias/symbols_shop/SymbolPictureSeven.png";
-        }
-        else if (type.contains("Pattern")) {
+        } else if (type.contains("Pattern")) {
             if (mainTarget.contains("Horizontal3Mult"))
                 path = "/medias/symbols_shop/PatternHorizontal3.png";
             else if (mainTarget.contains("Vertical3Mult"))

@@ -169,7 +169,23 @@ public class ShopPanel extends JPanel {
         public ItemPanel(Item item, int index) {
             setLayout(new GridBagLayout()); // More control than BorderLayout for centering
             setBackground(new Color(60, 60, 60));
-            setBorder(BorderFactory.createLineBorder(new Color(100, 100, 100), 2));
+
+            Color borderColor;
+            switch (item.getQuality()) {
+                case 4:
+                    borderColor = new Color(255, 215, 0);
+                    break; // Gold/Orange (Legendary)
+                case 3:
+                    borderColor = new Color(138, 43, 226);
+                    break; // Purple (Epic)
+                case 2:
+                    borderColor = new Color(30, 144, 255);
+                    break; // Blue (Rare)
+                default:
+                    borderColor = new Color(150, 150, 150);
+                    break; // Gray (Common)
+            }
+            setBorder(BorderFactory.createLineBorder(borderColor, 3)); // Thicker border for visibility
 
             String tooltip = "<html><p width=\"150\">" + item.getDescription() + "</p></html>";
             setToolTipText(tooltip);

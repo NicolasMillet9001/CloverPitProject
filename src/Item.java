@@ -10,15 +10,31 @@ public class Item {
     private List<Double> statsModifiers; // Multiplicateurs à appliquer
     private String imagePath; // Chemin vers l'image de l'objet
     private boolean isUnique; // Si l'objet est unique
+    private int quality; // 1 = Common, 2 = Rare, 3 = Epic, 4 = Legendary
 
-    public Item(String name, String description, int price, String type, boolean isUnique) {
+    public Item(String name, String description, int price, String type, boolean isUnique, int quality) {
         this.name = name;
         this.description = description;
         this.price = price;
         this.type = type;
         this.isUnique = isUnique;
+        this.quality = quality;
         this.targetStats = new ArrayList<>();
         this.statsModifiers = new ArrayList<>();
+    }
+
+    // Constructor override for backward compatibility if needed, defaulting to
+    // quality 1
+    public Item(String name, String description, int price, String type, boolean isUnique) {
+        this(name, description, price, type, isUnique, 1);
+    }
+
+    public int getQuality() {
+        return quality;
+    }
+
+    public void setQuality(int quality) {
+        this.quality = quality;
     }
 
     // Ajoute une statistique cible
@@ -175,7 +191,7 @@ public class Item {
     // Crée une copie de l'objet (pour ne pas modifier l'original dans la liste
     // globale)
     public Item copy() {
-        Item newItem = new Item(this.name, this.description, this.price, this.type, this.isUnique);
+        Item newItem = new Item(this.name, this.description, this.price, this.type, this.isUnique, this.quality);
         newItem.setImagePath(this.imagePath);
         // Copy lists
         for (String stat : this.targetStats)
@@ -187,6 +203,6 @@ public class Item {
 
     @Override
     public String toString() {
-        return name + " (" + price + " coins)";
+        return name + " (" + price + " coins) [Q" + quality + "]";
     }
 }

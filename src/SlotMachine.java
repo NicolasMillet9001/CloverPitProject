@@ -7,7 +7,7 @@ public class SlotMachine {
 
     private Symbol[][] Symbols = new Symbol[3][5];
     private boolean[][] winningCells = new boolean[3][5];
-    private double score = 0;
+    private double score = 11111;
     private int maxSpinsPerRound = 10;
     private int spinsLeft;
     private int currentRound = 1;
@@ -351,27 +351,90 @@ public class SlotMachine {
         currentShopItems.clear();
         soldIndices.clear();
 
-        // Ensure uniqueness using a temporary Set to track added items (by Name or Ref)
-        List<Item> pool = new ArrayList<>(allItems);
-        Collections.shuffle(pool);
+        // Segregate items by quality
+        List<Item> q1 = new ArrayList<>();
+        List<Item> q2 = new ArrayList<>();
+        List<Item> q3 = new ArrayList<>();
+        List<Item> q4 = new ArrayList<>();
 
-        List<String> addedNames = new ArrayList<>();
-
-        for (Item item : pool) {
-            if (currentShopItems.size() >= 5)
-                break;
-
-            // Check if we already added an item with this name (to avoid JSON dupes if any)
-            if (!addedNames.contains(item.getName())) {
-                // IMPORTANT: Create a COPY so we can modify price without changing master list
-                currentShopItems.add(item.copy());
-                addedNames.add(item.getName());
+        for (Item item : allItems) {
+            switch (item.getQuality()) {
+                case 4:
+                    q4.add(item);
+                    break;
+                case 3:
+                    q3.add(item);
+                    break;
+                case 2:
+                    q2.add(item);
+                    break;
+                default:
+                    q1.add(item);
+                    break; // Default to Q1
             }
         }
 
-        // Reset First Purchase Free rule for the new shop session
-        // isFirstPurchaseMade = false; // MOVED to checkRoundResult to avoid reset on
-        // reroll
+        java.util.Random rand = new java.util.Random();
+        List<String> addedNames = new ArrayList<>();
+
+        for (int i = 0; i < 5; i++) {
+            // Probabilities:
+            // Q1 (55%): 0-54
+            // Q2 (35%): 55-89
+            // Q3 (8%): 90-97
+            // Q4 (2%): 98-99
+
+            // We retry a few times if we pick a tier that is empty or an item already added
+            int maxRetries = 10;
+            Item selected = null;
+
+            for (int attempt = 0; attempt < maxRetries; attempt++) {
+                int roll = rand.nextInt(100);
+                List<Item> tier = q1;
+
+                if (roll >= 98)
+                    tier = q4;
+                else if (roll >= 90)
+                    tier = q3;
+                else if (roll >= 55)
+                    tier = q2;
+
+                if (tier.isEmpty())
+                    continue; // Reroll if tier empty (extremely unlikely for Q1/Q2, possible for Q4)
+
+                Item candidate = tier.get(rand.nextInt(tier.size()));
+                if (!addedNames.contains(candidate.getName())) {
+                    selected = candidate;
+                    break;
+                }
+            }
+
+            // Fallback: just pick any random item if retries failed
+            if (selected == null) {
+                // Try from all items
+                List<Item> pool = new ArrayList<>(allItems);
+                Collections.shuffle(pool);
+                for (Item item : pool) {
+                    if (!addedNames.contains(item.getName())) {
+                        selected = item;
+                        break;
+                    }
+                }
+                // Determine if we still have nothing (shouldn't happen unless <5 items total)
+                if (selected == null && !allItems.isEmpty()) {
+                    selected = allItems.get(rand.nextInt(allItems.size())); // Duplicate allowable as last resort
+                }
+            }
+
+            if (selected != null) {
+                currentShopItems.add(selected.copy());
+                addedNames.add(selected.getName());
+            }
+        }
+
+        // Reset First Purchase Free rule for the new shop session (Now moved to
+        // checkRoundResult logic, but method comment says to remove it here)
+        // isFirstPurchaseMade = false; // Already removed/commented out
     }
 
     public List<Item> getCurrentShopItems() {

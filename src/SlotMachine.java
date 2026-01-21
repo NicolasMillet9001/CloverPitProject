@@ -23,6 +23,11 @@ public class SlotMachine {
     private List<Item> currentShopItems;
     private java.util.Set<Integer> soldIndices = new java.util.HashSet<>();
     private boolean isFirstPurchaseMade = false;
+    private Runnable onGameReset;
+
+    public void setOnGameReset(Runnable onGameReset) {
+        this.onGameReset = onGameReset;
+    }
 
     public boolean isFirstPurchaseMade() {
         return isFirstPurchaseMade;
@@ -83,10 +88,6 @@ public class SlotMachine {
 
     public void spin() {
         if (spinsLeft <= 0) {
-            // Fin du round, vérifier résultat
-            checkRoundResult();
-            // openShop(); // FIX: Removed duplicate/incorrect call. checkRoundResult
-            // handles it.
             return;
         }
         spinsLeft--;
@@ -179,7 +180,7 @@ public class SlotMachine {
                         if (j != 2 || (Symbols[0][2].GetSymbolType() != Symbols[1][1].GetSymbolType()
                                 && Symbols[0][2].GetSymbolType() != Symbols[2][0].GetSymbolType())) {
                             System.out.println("Une diagonale droite !");
-                            this.AddScore(3, Symbols[0][2], Pattern.PatternType.diagonal);
+                            this.AddScore(3, Symbols[0][j], Pattern.PatternType.diagonal);
                             markWinDiagonalRight(j);
                         }
                     }
@@ -217,7 +218,7 @@ public class SlotMachine {
                         }
                     } else {
                         System.out.println("Une diagonale gauche !");
-                        this.AddScore(3, Symbols[0][2], Pattern.PatternType.diagonal);
+                        this.AddScore(3, Symbols[0][4 - j], Pattern.PatternType.diagonal);
                         markWinDiagonalLeft(j);
                     }
                 }
@@ -243,6 +244,11 @@ public class SlotMachine {
 
             this.lastSpinGain = this.score - scoreBeforeSpin;
             System.out.println("Score : " + GetScore() + " (+" + lastSpinGain + ")");
+
+            // Check for round end
+            if (spinsLeft == 0) {
+                checkRoundResult();
+            }
         } catch (Exception e) {
             System.out.println(e);
         }
@@ -265,6 +271,7 @@ public class SlotMachine {
     private void checkRoundResult() {
         if (score >= minScoreToPass) {
             System.out.println("Round " + currentRound + " réussi ! Ouverture du shop...");
+            generateShopItems(); // Ensure shop is populated
             openShop();
         } else {
             System.out.println("Round " + currentRound + " échoué ! La partie est perdue.");
@@ -282,6 +289,10 @@ public class SlotMachine {
         inventory.clear();
         soldIndices.clear();
         isFirstPurchaseMade = false;
+
+        if (onGameReset != null) {
+            onGameReset.run();
+        }
 
         JOptionPane.showMessageDialog(null, "Partie perdue ! Recommencez depuis le début.", "Fin de partie",
                 JOptionPane.INFORMATION_MESSAGE);
@@ -354,6 +365,9 @@ public class SlotMachine {
                 addedNames.add(item.getName());
             }
         }
+
+        // Reset First Purchase Free rule for the new shop session
+        isFirstPurchaseMade = false;
     }
 
     public List<Item> getCurrentShopItems() {

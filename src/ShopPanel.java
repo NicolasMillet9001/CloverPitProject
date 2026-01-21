@@ -45,7 +45,7 @@ public class ShopPanel extends JPanel {
         bottomPanel.setOpaque(false);
         bottomPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 20, 0));
 
-        JButton rerollButton = new JButton("REROLL (10 Coins)");
+        JButton rerollButton = new JButton("RELANCER (10 Pièces)");
         rerollButton.setFont(new Font("Arial", Font.BOLD, 20));
         rerollButton.setBackground(new Color(139, 69, 19)); // SaddleBrown
         rerollButton.setForeground(Color.WHITE);
@@ -56,11 +56,11 @@ public class ShopPanel extends JPanel {
                 if (this.onRerollCallback != null)
                     this.onRerollCallback.run();
             } else {
-                JOptionPane.showMessageDialog(this, "Not enough coins!");
+                JOptionPane.showMessageDialog(this, "Pas assez de pièces !");
             }
         });
 
-        JButton closeButton = new JButton("NEXT ROUND");
+        JButton closeButton = new JButton("ROUND SUIVANT");
         closeButton.setFont(new Font("Arial", Font.BOLD, 20));
         closeButton.setBackground(new Color(34, 139, 34)); // ForestGreen
         closeButton.setForeground(Color.WHITE);
@@ -227,7 +227,7 @@ public class ShopPanel extends JPanel {
             add(pricePanel, gbc);
 
             // 4. Buy Button
-            buyBtn = new JButton(isFree ? "FREE" : "BUY");
+            buyBtn = new JButton(isFree ? "GRATUIT" : "ACHETER");
 
             boolean isSold = slotMachine.isItemSold(index);
             if (isSold) {
@@ -243,7 +243,7 @@ public class ShopPanel extends JPanel {
                     if (onRerollCallback != null)
                         onRerollCallback.run();
                 } else {
-                    JOptionPane.showMessageDialog(ShopPanel.this, "Not enough coins!");
+                    JOptionPane.showMessageDialog(ShopPanel.this, "Pas assez de pièces !");
                 }
             });
 

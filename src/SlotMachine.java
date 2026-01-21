@@ -41,8 +41,10 @@ public class SlotMachine {
     }
 
     public void AddScore(int nbOfSymbols, Symbol symbol, Pattern.PatternType pattern) {
-        this.score += nbOfSymbols * (Symbol.GetValue(symbol.GetSymbolType()) * Symbol.GetSymbolGlobalValueMultiplier())
+        double scoreToAdd = nbOfSymbols * (Symbol.GetValue(symbol.GetSymbolType()) * Symbol.GetSymbolGlobalValueMultiplier())
                 * (Pattern.GetMultiplier(pattern) * Pattern.GetGlobalMultiplier());
+
+        this.score += scoreToAdd;
     }
 
     public void SubstractScore(double score) {

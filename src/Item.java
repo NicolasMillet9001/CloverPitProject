@@ -117,6 +117,9 @@ public class Item {
     // Convertit une chaîne de statistique en type de symbole
     private Symbol.EnumSymbolType getSymbolTypeFromStat(String stat) {
         switch (stat) {
+            case "CitronLuck":
+            case "CitronValue":
+                return Symbol.EnumSymbolType.Citron;
             case "CeriseLuck":
             case "CeriseValue":
                 return Symbol.EnumSymbolType.Cerise;

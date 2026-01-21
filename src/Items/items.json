@@ -1,17 +1,45 @@
 [
   {
-    "nom": "Amélioration de chances de cerises",
-    "description": "Augmente les chances d'obtenir des cerises de 100%",
+    "nom": "Amélioration de chances de citrons",
+    "description": "Augmente les chances d'obtenir des citrons de 100%",
     "quality": 2,
     "basePrice": 100,
     "itemType": "SymbolChanceModifier",
     "targetStats": [
-      "CeriseLuck"
+      "CitronLuck"
     ],
     "StatsModifiers": [
       2
     ],
     "unique": "false"
+  },
+  {
+    "nom": "Amélioration de la valeur des citrons",
+    "description": "Augmente la valeur des citrons de 100%",
+    "quality": 3,
+    "basePrice": 200,
+    "itemType": "SymbolValueModifier",
+    "targetStats": [
+      "CitronValue"
+    ],
+    "StatsModifiers": [
+      2
+    ],
+    "unique": "false"
+  },
+  {
+  "nom": "Amélioration de chances de cerises",
+  "description": "Augmente les chances d'obtenir des cerises de 100%",
+  "quality": 2,
+  "basePrice": 100,
+  "itemType": "SymbolChanceModifier",
+  "targetStats": [
+    "CeriseLuck"
+  ],
+  "StatsModifiers": [
+    2
+  ],
+  "unique": "false"
   },
   {
     "nom": "Amélioration de la valeur des cerises",

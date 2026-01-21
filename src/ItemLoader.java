@@ -113,6 +113,8 @@ public class ItemLoader {
 
         if (type.contains("Value")) {
             // Golden
+            if (mainTarget.contains("Citron"))
+                path = "/medias/symbols_shop/SymbolGoldenLemon.png";
             if (mainTarget.contains("Cerise"))
                 path = "/medias/symbols_shop/SymbolGoldenCherry.png";
             else if (mainTarget.contains("Cloche"))
@@ -129,6 +131,8 @@ public class ItemLoader {
                 path = "/medias/symbols_shop/x2.png";
 
         } else if (type.contains("Chance")) {
+            if (mainTarget.contains("Citron"))
+                path = "/medias/symbols_shop/SymbolPictureLemon.png";
             if (mainTarget.contains("Cerise"))
                 path = "/medias/symbols_shop/SymbolPictureCherry.png";
             else if (mainTarget.contains("Cloche"))

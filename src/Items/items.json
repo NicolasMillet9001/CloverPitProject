@@ -1,7 +1,7 @@
 [
   {
     "nom": "Amélioration de chances de citrons",
-    "description": "Augmente les chances d'obtenir des citrons de +3.5%",
+    "description": "Augmente les chances d'obtenir des citrons de 100%",
     "quality": 2,
     "basePrice": 100,
     "itemType": "SymbolChanceModifier",
@@ -9,7 +9,7 @@
       "CitronLuck"
     ],
     "StatsModifiers": [
-      3.5
+      2
     ],
     "unique": "false"
   },
@@ -29,7 +29,7 @@
   },
   {
     "nom": "Amélioration de chances de cerises",
-    "description": "Augmente les chances d'obtenir des cerises de +3.5%",
+    "description": "Augmente les chances d'obtenir des cerises de 100%",
     "quality": 2,
     "basePrice": 100,
     "itemType": "SymbolChanceModifier",
@@ -37,7 +37,7 @@
       "CeriseLuck"
     ],
     "StatsModifiers": [
-      3.5
+      2
     ],
     "unique": "false"
   },
@@ -57,7 +57,7 @@
   },
   {
     "nom": "Amélioration de chances de cloches",
-    "description": "Augmente les chances d'obtenir des cloches de +4%",
+    "description": "Augmente les chances d'obtenir des cloches de 100%",
     "quality": 2,
     "basePrice": 100,
     "itemType": "SymbolChanceModifier",
@@ -65,7 +65,7 @@
       "ClocheLuck"
     ],
     "StatsModifiers": [
-      4
+      2
     ],
     "unique": "false"
   },
@@ -85,7 +85,7 @@
   },
   {
     "nom": "Amélioration de chances de trèfles",
-    "description": "Augmente les chances d'obtenir des trèfles de +4%",
+    "description": "Augmente les chances d'obtenir des trèfles de 100%",
     "quality": 2,
     "basePrice": 100,
     "itemType": "SymbolChanceModifier",
@@ -93,7 +93,7 @@
       "TrefleLuck"
     ],
     "StatsModifiers": [
-      4
+      2
     ],
     "unique": "false"
   },
@@ -113,7 +113,7 @@
   },
   {
     "nom": "Amélioration de chances de coffres",
-    "description": "Augmente les chances d'obtenir des coffres de +4.5%",
+    "description": "Augmente les chances d'obtenir des coffres de 100%",
     "quality": 2,
     "basePrice": 100,
     "itemType": "SymbolChanceModifier",
@@ -121,7 +121,7 @@
       "CoffreLuck"
     ],
     "StatsModifiers": [
-      4.5
+      2
     ],
     "unique": "false"
   },
@@ -141,7 +141,7 @@
   },
   {
     "nom": "Amélioration de chances de diamants",
-    "description": "Augmente les chances d'obtenir des diamants de +4.5%",
+    "description": "Augmente les chances d'obtenir des diamants de 100%",
     "quality": 2,
     "basePrice": 100,
     "itemType": "SymbolChanceModifier",
@@ -149,7 +149,7 @@
       "DiamantLuck"
     ],
     "StatsModifiers": [
-      4.5
+      2
     ],
     "unique": "false"
   },
@@ -169,7 +169,7 @@
   },
   {
     "nom": "Amélioration de chances de septs",
-    "description": "Augmente les chances d'obtenir des septs de +5%",
+    "description": "Augmente les chances d'obtenir des septs de 100%",
     "quality": 2,
     "basePrice": 100,
     "itemType": "SymbolChanceModifier",
@@ -177,7 +177,7 @@
       "SeptLuck"
     ],
     "StatsModifiers": [
-      5
+      2
     ],
     "unique": "false"
   },
@@ -329,6 +329,20 @@
     "itemType": "PatternGlobalMultiplierModifier",
     "targetStats": [
       "GlobalMult"
+    ],
+    "StatsModifiers": [
+      1
+    ],
+    "unique": "false"
+  },
+  {
+    "nom": "Spins Supplémentaires",
+    "description": "Augmente le nombre de tours par manche de +1",
+    "quality": 4,
+    "basePrice": 300,
+    "itemType": "StatModifier",
+    "targetStats": [
+      "MaxSpins"
     ],
     "StatsModifiers": [
       1

@@ -181,10 +181,10 @@ public class Symbol {
         SymbolGlobalValueMultiplier += multiplier;
     }
 
-    public static void UpdateChanceSafe(EnumSymbolType targetSymbol, double multiplier) {
-        // 1. Calculate new target chance
+    public static void UpdateChanceSafe(EnumSymbolType targetSymbol, double addedChance) {
+        // 1. Calculate new target chance (Additive)
         double currentTargetChance = GetChance(targetSymbol);
-        double newTargetChance = currentTargetChance * multiplier;
+        double newTargetChance = currentTargetChance + addedChance;
 
         // Cap at 99% to avoid issues, or 100%
         if (newTargetChance > 99.0)

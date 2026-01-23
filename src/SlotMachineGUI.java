@@ -4,6 +4,8 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import java.util.Objects;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 
 public class SlotMachineGUI extends JFrame {
     private SlotMachine slotMachine;
@@ -86,7 +88,9 @@ public class SlotMachineGUI extends JFrame {
         spinButton.setFont(new Font("Arial", Font.BOLD, 20));
         spinButton.setBackground(new Color(50, 205, 50));
         spinButton.setForeground(Color.WHITE);
+        spinButton.setForeground(Color.WHITE);
         spinButton.setFocusPainted(false);
+        spinButton.setFocusable(false); // Fix: Prevent button from stealing focus
         spinButton.addActionListener(e -> {
             if (slotMachine.getSpinsLeft() <= 0) {
                 toggleShopScreen();
@@ -108,7 +112,9 @@ public class SlotMachineGUI extends JFrame {
         infoButton.setFont(new Font("Arial", Font.BOLD, 14));
         infoButton.setBackground(new Color(70, 130, 180));
         infoButton.setForeground(Color.WHITE);
+        infoButton.setForeground(Color.WHITE);
         infoButton.setFocusPainted(false);
+        infoButton.setFocusable(false); // Fix: Prevent button from stealing focus
         infoButton.addActionListener(e -> toggleInfoScreen());
 
         JButton inventoryButton = new JButton("INVENTAIRE");
@@ -116,7 +122,9 @@ public class SlotMachineGUI extends JFrame {
         inventoryButton.setFont(new Font("Arial", Font.BOLD, 14));
         inventoryButton.setBackground(new Color(100, 100, 100)); // Gray
         inventoryButton.setForeground(Color.WHITE);
+        inventoryButton.setForeground(Color.WHITE);
         inventoryButton.setFocusPainted(false);
+        inventoryButton.setFocusable(false); // Fix: Prevent button from stealing focus
         inventoryButton.addActionListener(e -> toggleInventoryScreen());
 
         // Panel bas (Boutons)
@@ -135,6 +143,24 @@ public class SlotMachineGUI extends JFrame {
 
         add(mainContainer, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
+
+        // --- GLOBAL KEY BINDING FOR SPACE ---
+        KeyStroke spaceKey = KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0);
+        getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(spaceKey, "spin");
+        getRootPane().getActionMap().put("spin", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                // Ensure we only spin when allowed (game screen active, buttons enabled)
+                if (spinButton.isEnabled() && !isShopScreenVisible && !isInfoScreenVisible
+                        && !isInventoryScreenVisible) {
+                    if (slotMachine.getSpinsLeft() <= 0) {
+                        toggleShopScreen();
+                    } else {
+                        startSpin();
+                    }
+                }
+            }
+        });
     }
 
     private void toggleInventoryScreen() {

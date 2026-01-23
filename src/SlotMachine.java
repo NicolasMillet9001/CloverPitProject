@@ -473,6 +473,7 @@ public class SlotMachine {
             soldIndices.add(index);
             inventory.add(item);
             System.out.println("First purchase! " + item.getName() + " is free.");
+            increaseItemPriceInPool(item.getName()); // Inflation even if free
             return true;
         }
 
@@ -482,9 +483,26 @@ public class SlotMachine {
             applyItemEffect(item);
             soldIndices.add(index);
             inventory.add(item);
+            increaseItemPriceInPool(item.getName()); // Inflation
             return true;
         }
         return false;
+    }
+
+    private void increaseItemPriceInPool(String itemName) {
+        for (Item item : allItems) {
+            if (item.getName().equals(itemName)) {
+                int oldPrice = item.getPrice();
+                int newPrice = (int) (oldPrice * 1.5);
+                // Ensure it increases by at least 1 if price is low but > 0
+                if (newPrice == oldPrice && oldPrice > 0) {
+                    newPrice++;
+                }
+                item.setPrice(newPrice);
+                System.out.println("Inflation: " + itemName + " price increased from " + oldPrice + " to " + newPrice);
+                break;
+            }
+        }
     }
 
     private void applyItemEffect(Item item) {

@@ -493,7 +493,7 @@ public class SlotMachine {
         for (Item item : allItems) {
             if (item.getName().equals(itemName)) {
                 int oldPrice = item.getPrice();
-                int newPrice = (int) (oldPrice * 1.5);
+                int newPrice = (int) (oldPrice * 2.5);
                 // Ensure it increases by at least 1 if price is low but > 0
                 if (newPrice == oldPrice && oldPrice > 0) {
                     newPrice++;

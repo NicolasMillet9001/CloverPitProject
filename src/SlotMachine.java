@@ -7,7 +7,7 @@ public class SlotMachine {
 
     private Symbol[][] Symbols = new Symbol[3][5];
     private boolean[][] winningCells = new boolean[3][5];
-    private double score = 11111;
+    private double score = 0;
     private int maxSpinsPerRound = 10;
     private int spinsLeft;
     private int currentRound = 1;
@@ -65,7 +65,6 @@ public class SlotMachine {
         allItems = ItemLoader.loadItems();
         currentShopItems = new ArrayList<>();
 
-        // spin(); // Removed to prevent auto-start
     }
 
     public void startNewRound() {
@@ -80,7 +79,7 @@ public class SlotMachine {
                 winningCells[i][j] = false;
             }
         }
-        // spin(); // Removed to require manual start
+
     }
 
     private double calculateMinScoreForRound(int round) {
@@ -273,7 +272,7 @@ public class SlotMachine {
         if (score >= minScoreToPass) {
             System.out.println("Round " + currentRound + " réussi ! Ouverture du shop...");
             isFirstPurchaseMade = false; // Reset rule ONLY when winning a round
-            // generateShopItems(); // Redundant, openShop() calls it
+
             openShop();
         } else {
             System.out.println("Round " + currentRound + " échoué ! La partie est perdue.");
@@ -432,9 +431,6 @@ public class SlotMachine {
             }
         }
 
-        // Reset First Purchase Free rule for the new shop session (Now moved to
-        // checkRoundResult logic, but method comment says to remove it here)
-        // isFirstPurchaseMade = false; // Already removed/commented out
     }
 
     public List<Item> getCurrentShopItems() {

@@ -334,5 +334,19 @@
       1
     ],
     "unique": "false"
+  },
+  {
+    "nom": "Spins Supplémentaires",
+    "description": "Augmente le nombre de tours par manche de +1",
+    "quality": 4,
+    "basePrice": 300,
+    "itemType": "StatModifier",
+    "targetStats": [
+      "MaxSpins"
+    ],
+    "StatsModifiers": [
+      1
+    ],
+    "unique": "false"
   }
 ]

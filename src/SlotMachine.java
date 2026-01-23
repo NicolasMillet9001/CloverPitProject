@@ -282,9 +282,14 @@ public class SlotMachine {
 
     private void resetGame() {
         this.currentRound = 1;
+        this.maxSpinsPerRound = 10; // Reset max spins
         this.spinsLeft = maxSpinsPerRound;
         this.score = 0;
         this.minScoreToPass = calculateMinScoreForRound(currentRound - 1);
+
+        // Reload Items to reset prices
+        allItems = ItemLoader.loadItems();
+        currentShopItems = new ArrayList<>(); // Clear current shop items just in case
 
         // Clear inventory and shop history
         inventory.clear();
@@ -492,14 +497,21 @@ public class SlotMachine {
     private void increaseItemPriceInPool(String itemName) {
         for (Item item : allItems) {
             if (item.getName().equals(itemName)) {
+                double multiplier = 2.5; // Default multiplier for most items
+                if ("SymbolChanceModifier".equals(item.getType())) {
+                    multiplier = 1.25; // Lower multiplier for chance modifiers
+                }
+
                 int oldPrice = item.getPrice();
-                int newPrice = (int) (oldPrice * 2.5);
+                int newPrice = (int) Math.ceil(oldPrice * multiplier);
+
                 // Ensure it increases by at least 1 if price is low but > 0
                 if (newPrice == oldPrice && oldPrice > 0) {
                     newPrice++;
                 }
                 item.setPrice(newPrice);
-                System.out.println("Inflation: " + itemName + " price increased from " + oldPrice + " to " + newPrice);
+                System.out.println("Inflation: " + itemName + " (" + item.getType() + ") price increased from "
+                        + oldPrice + " to " + newPrice + " (x" + multiplier + ")");
                 break;
             }
         }
@@ -583,7 +595,17 @@ public class SlotMachine {
             else if (target.equals("JackpotMult"))
                 Pattern.SetMultiplier(Pattern.PatternType.jackpot,
                         Pattern.GetMultiplier(Pattern.PatternType.jackpot) * mod);
+
+            // --- Game Stats ---
+            else if (target.equals("MaxSpins")) {
+                addMaxSpins((int) mod);
+            }
         }
+    }
+
+    public void addMaxSpins(int amount) {
+        this.maxSpinsPerRound += amount;
+        this.spinsLeft += amount;
     }
 
     public int getSpinsLeft() {

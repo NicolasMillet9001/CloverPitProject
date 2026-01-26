@@ -443,7 +443,7 @@ public class SlotMachineGUI extends JFrame {
 
             g2d.setColor(Color.WHITE);
             g2d.setFont(new Font("Arial", Font.BOLD, 20));
-            g2d.drawString("Round: " + slotMachine.getCurrentRound(), 20, 30); // Uncommented per request
+            g2d.drawString("Round: " + slotMachine.getCurrentRound() + "/8", 20, 30); // Uncommented per request
 
             // Afficher les lancers restants (MOVED TO BOTTOM)
             // g2d.drawString("Lancers restants: " + slotMachine.getSpinsLeft(), 20, 60);

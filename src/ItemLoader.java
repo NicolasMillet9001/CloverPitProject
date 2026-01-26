@@ -173,7 +173,7 @@ public class ItemLoader {
             else
                 path = "/medias/symbols_shop/PatternEye.png";
         } else if (mainTarget.contains("MaxSpins"))
-            path = "/medias/symbols_shop/+1.png";
+            path = "/medias/symbols_shop/+2.png";
 
         item.setImagePath(path);
     }

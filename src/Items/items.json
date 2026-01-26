@@ -1,6 +1,6 @@
 [
   {
-    "nom": "Amélioration de chances de citrons",
+    "nom": "Amélioration de chances de citrons (+3.5%)",
     "description": "Augmente les chances d'obtenir des citrons de +3.5%",
     "quality": 2,
     "basePrice": 100,
@@ -14,7 +14,7 @@
     "unique": "false"
   },
   {
-    "nom": "Amélioration de la valeur des citrons",
+    "nom": "Amélioration de la valeur des citrons (x2)",
     "description": "Augmente la valeur des citrons de 100%",
     "quality": 3,
     "basePrice": 200,
@@ -28,7 +28,7 @@
     "unique": "false"
   },
   {
-    "nom": "Amélioration de chances de cerises",
+    "nom": "Amélioration de chances de cerises (+3.5%)",
     "description": "Augmente les chances d'obtenir des cerises de +3.5%",
     "quality": 2,
     "basePrice": 100,
@@ -42,7 +42,7 @@
     "unique": "false"
   },
   {
-    "nom": "Amélioration de la valeur des cerises",
+    "nom": "Amélioration de la valeur des cerises (x2)",
     "description": "Augmente la valeur des cerises de 100%",
     "quality": 3,
     "basePrice": 200,
@@ -56,7 +56,7 @@
     "unique": "false"
   },
   {
-    "nom": "Amélioration de chances de cloches",
+    "nom": "Amélioration de chances de cloches (+4%)",
     "description": "Augmente les chances d'obtenir des cloches de +4%",
     "quality": 2,
     "basePrice": 100,
@@ -70,7 +70,7 @@
     "unique": "false"
   },
   {
-    "nom": "Amélioration de la valeur des cloches",
+    "nom": "Amélioration de la valeur des cloches (x2)",
     "description": "Augmente la valeur des cloches de 100%",
     "quality": 3,
     "basePrice": 200,
@@ -84,7 +84,7 @@
     "unique": "false"
   },
   {
-    "nom": "Amélioration de chances de trèfles",
+    "nom": "Amélioration de chances de trèfles (+4%)",
     "description": "Augmente les chances d'obtenir des trèfles de +4%",
     "quality": 2,
     "basePrice": 100,
@@ -98,7 +98,7 @@
     "unique": "false"
   },
   {
-    "nom": "Amélioration de la valeur des trèfles",
+    "nom": "Amélioration de la valeur des trèfles (x2)",
     "description": "Augmente la valeur des trèfles de 100%",
     "quality": 3,
     "basePrice": 200,
@@ -112,7 +112,7 @@
     "unique": "false"
   },
   {
-    "nom": "Amélioration de chances de coffres",
+    "nom": "Amélioration de chances de coffres (+4.5%)",
     "description": "Augmente les chances d'obtenir des coffres de +4.5%",
     "quality": 2,
     "basePrice": 100,
@@ -126,7 +126,7 @@
     "unique": "false"
   },
   {
-    "nom": "Amélioration de la valeur des coffres",
+    "nom": "Amélioration de la valeur des coffres (x2)",
     "description": "Augmente la valeur des coffres de 100%",
     "quality": 3,
     "basePrice": 200,
@@ -140,7 +140,7 @@
     "unique": "false"
   },
   {
-    "nom": "Amélioration de chances de diamants",
+    "nom": "Amélioration de chances de diamants (+4.5%)",
     "description": "Augmente les chances d'obtenir des diamants de +4.5%",
     "quality": 2,
     "basePrice": 100,
@@ -154,7 +154,7 @@
     "unique": "false"
   },
   {
-    "nom": "Amélioration de la valeur des diamants",
+    "nom": "Amélioration de la valeur des diamants (x2)",
     "description": "Augmente la valeur des diamants de 100%",
     "quality": 3,
     "basePrice": 200,
@@ -168,7 +168,7 @@
     "unique": "false"
   },
   {
-    "nom": "Amélioration de chances de septs",
+    "nom": "Amélioration de chances de septs (+5%)",
     "description": "Augmente les chances d'obtenir des septs de +5%",
     "quality": 2,
     "basePrice": 100,
@@ -182,7 +182,7 @@
     "unique": "false"
   },
   {
-    "nom": "Amélioration de la valeur des septs",
+    "nom": "Amélioration de la valeur des septs (x2)",
     "description": "Augmente la valeur des septs de 100%",
     "quality": 3,
     "basePrice": 200,
@@ -196,7 +196,7 @@
     "unique": "false"
   },
   {
-    "nom": "Amélioration de la valeur de tous les symboles",
+    "nom": "Amélioration de la valeur de tous les symboles (+1)",
     "description": "Augmente la valeur des symboles de +1",
     "quality": 4,
     "basePrice": 500,
@@ -210,7 +210,7 @@
     "unique": "false"
   },
   {
-    "nom": "Amélioration du multiplicateur des lignes horizontales de 3",
+    "nom": "Amélioration du multiplicateur des lignes horizontales de 3 (x2)",
     "description": "Augmente la valeur des lignes horizontales de 3 de 100%",
     "quality": 1,
     "basePrice": 50,
@@ -224,7 +224,7 @@
     "unique": "false"
   },
   {
-    "nom": "Amélioration du multiplicateur des lignes horizontales de 4",
+    "nom": "Amélioration du multiplicateur des lignes horizontales de 4 (x2)",
     "description": "Augmente la valeur des lignes horizontales de 4 de 100%",
     "quality": 1,
     "basePrice": 50,
@@ -238,7 +238,7 @@
     "unique": "false"
   },
   {
-    "nom": "Amélioration du multiplicateur des lignes horizontales de 5",
+    "nom": "Amélioration du multiplicateur des lignes horizontales de 5 (x2)",
     "description": "Augmente la valeur des lignes horizontales de 5 de 100%",
     "quality": 1,
     "basePrice": 50,
@@ -252,7 +252,7 @@
     "unique": "false"
   },
   {
-    "nom": "Amélioration du multiplicateur des colonnes",
+    "nom": "Amélioration du multiplicateur des colonnes (x2)",
     "description": "Augmente la valeur des colonnes de 100%",
     "quality": 1,
     "basePrice": 50,
@@ -266,7 +266,7 @@
     "unique": "false"
   },
   {
-    "nom": "Amélioration du multiplicateur des diagonales",
+    "nom": "Amélioration du multiplicateur des diagonales (x2)",
     "description": "Augmente la valeur des diagonales de 100%",
     "quality": 1,
     "basePrice": 50,
@@ -280,7 +280,7 @@
     "unique": "false"
   },
   {
-    "nom": "Amélioration du multiplicateur des zigzag",
+    "nom": "Amélioration du multiplicateur des zigzag (x2)",
     "description": "Augmente la valeur des zigzag de 100%",
     "quality": 1,
     "basePrice": 50,
@@ -294,7 +294,7 @@
     "unique": "false"
   },
   {
-    "nom": "Amélioration du multiplicateur des triangles",
+    "nom": "Amélioration du multiplicateur des triangles (x2)",
     "description": "Augmente la valeur des triangles de 100%",
     "quality": 1,
     "basePrice": 50,
@@ -308,7 +308,7 @@
     "unique": "false"
   },
   {
-    "nom": "Amélioration du multiplicateur du jackpot",
+    "nom": "Amélioration du multiplicateur du jackpot (x2)",
     "description": "Augmente la valeur du jackpot de 100%",
     "quality": 1,
     "basePrice": 50,
@@ -322,7 +322,7 @@
     "unique": "false"
   },
   {
-    "nom": "Amélioration du multiplicateur de tous les patterns",
+    "nom": "Amélioration du multiplicateur de tous les patterns (+1)",
     "description": "Augmente le multiplicateur des patterns de +1",
     "quality": 4,
     "basePrice": 500,
@@ -336,7 +336,7 @@
     "unique": "false"
   },
   {
-    "nom": "Spins Supplémentaires",
+    "nom": "Spins Supplémentaires (+1)",
     "description": "Augmente le nombre de tours par manche de +1",
     "quality": 4,
     "basePrice": 300,

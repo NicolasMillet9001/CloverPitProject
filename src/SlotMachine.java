@@ -347,6 +347,10 @@ public class SlotMachine {
     }
 
     public void resetGame() {
+        resetGame(true);
+    }
+
+    public void resetGame(boolean showMessage) {
         this.currentRound = 1;
         this.maxSpinsPerRound = 10; // Reset max spins
         this.spinsLeft = maxSpinsPerRound;
@@ -368,8 +372,10 @@ public class SlotMachine {
             onGameReset.run();
         }
 
-        JOptionPane.showMessageDialog(null, "Partie perdue ! Recommencez depuis le début.", "Fin de partie",
-                JOptionPane.INFORMATION_MESSAGE);
+        if (showMessage) {
+            JOptionPane.showMessageDialog(null, "Partie perdue ! Recommencez depuis le début.", "Fin de partie",
+                    JOptionPane.INFORMATION_MESSAGE);
+        }
     }
 
     // --- Méthodes utilitaires pour marquer les gagnants ---

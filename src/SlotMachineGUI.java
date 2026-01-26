@@ -30,14 +30,21 @@ public class SlotMachineGUI extends JFrame {
     private final String CARD_GAME = "GAME";
     private final String CARD_INFO = "INFO";
     private final String CARD_SHOP = "SHOP";
+    private final String CARD_INVENTORY = "INVENTORY";
+    private final String CARD_MENU = "MENU";
+
     private boolean isInfoScreenVisible = false;
     private boolean isShopScreenVisible = false;
     private boolean isInventoryScreenVisible = false;
-    private final String CARD_INVENTORY = "INVENTORY";
+    private boolean isGameRunning = false;
+    private boolean isMenuVisible = true;
 
     private InfoPanel infoPanel;
     private ShopPanel shopPanel;
     private InventoryPanel inventoryPanel;
+    private MainMenuPanel mainMenuPanel;
+
+    private JPanel buttonPanel;
 
     public SlotMachineGUI() {
         slotMachine = new SlotMachine();
@@ -73,13 +80,27 @@ public class SlotMachineGUI extends JFrame {
                 () -> toggleShopScreen());
         inventoryPanel = new InventoryPanel(slotMachine, this::toggleInventoryScreen);
 
+        // MAIN MENU INIT
+        mainMenuPanel = new MainMenuPanel(
+                e -> startGame(), // Play/Resume action
+                e -> System.exit(0), // Quit action
+                e -> { // Restart action
+                    slotMachine.resetGame(false);
+                    isGameRunning = true;
+                    isMenuVisible = false;
+                    mainMenuPanel.setGameStarted(true);
+                    buttonPanel.setVisible(true);
+                    cardLayout.show(mainContainer, CARD_GAME);
+                });
+
+        mainContainer.add(mainMenuPanel, CARD_MENU);
         mainContainer.add(gamePanel, CARD_GAME);
         mainContainer.add(infoPanel, CARD_INFO);
         mainContainer.add(shopPanel, CARD_SHOP);
         mainContainer.add(inventoryPanel, CARD_INVENTORY);
 
         // --- 2. BOUTONS ---
-        JPanel buttonPanel = new JPanel();
+        buttonPanel = new JPanel();
         buttonPanel.setBackground(Color.BLACK);
         buttonPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 10));
 
@@ -169,6 +190,9 @@ public class SlotMachineGUI extends JFrame {
         add(mainContainer, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
 
+        // Show Buttons conditionally (Hide on Menu)
+        buttonPanel.setVisible(false);
+
         // --- GLOBAL KEY BINDING FOR SPACE ---
         KeyStroke spaceKey = KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0);
         getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(spaceKey, "spin");
@@ -176,7 +200,7 @@ public class SlotMachineGUI extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 // Ensure we only spin when allowed (game screen active, buttons enabled)
-                if (spinButton.isEnabled() && !isShopScreenVisible && !isInfoScreenVisible
+                if (!isMenuVisible && spinButton.isEnabled() && !isShopScreenVisible && !isInfoScreenVisible
                         && !isInventoryScreenVisible) {
                     if (slotMachine.getSpinsLeft() <= 0) {
                         toggleShopScreen();
@@ -186,6 +210,59 @@ public class SlotMachineGUI extends JFrame {
                 }
             }
         });
+
+        // --- GLOBAL KEY BINDING FOR ESCAPE (PAUSE) ---
+        KeyStroke escKey = KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0);
+        getRootPane().getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(escKey, "toggleMenu");
+        getRootPane().getActionMap().put("toggleMenu", new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                toggleMainMenu();
+            }
+        });
+
+        // Init state
+        cardLayout.show(mainContainer, CARD_MENU);
+    }
+
+    private void startGame() {
+        if (!isGameRunning) {
+            // New Game
+            slotMachine.resetGame(false); // Ensure clean state WITHOUT "Lost" message
+            isGameRunning = true;
+            isMenuVisible = false;
+            mainMenuPanel.setGameStarted(true); // Update button text to "Reprendre"
+            buttonPanel.setVisible(true); // Show game buttons
+            cardLayout.show(mainContainer, CARD_GAME);
+        } else {
+            // Resume
+            isMenuVisible = false;
+            buttonPanel.setVisible(true);
+
+            // Restore appropriate screen
+            if (isShopScreenVisible)
+                cardLayout.show(mainContainer, CARD_SHOP);
+            else if (isInfoScreenVisible)
+                cardLayout.show(mainContainer, CARD_INFO);
+            else if (isInventoryScreenVisible)
+                cardLayout.show(mainContainer, CARD_INVENTORY);
+            else
+                cardLayout.show(mainContainer, CARD_GAME);
+        }
+    }
+
+    private void toggleMainMenu() {
+        if (isMenuVisible) {
+            if (isGameRunning) { // Changed from isGameStarted to isGameRunning
+                startGame(); // Resume
+            }
+            // else ignore or maybe quit? No, stay on menu
+        } else {
+            // Pause Game
+            isMenuVisible = true;
+            buttonPanel.setVisible(false); // Hide game buttons
+            cardLayout.show(mainContainer, CARD_MENU);
+        }
     }
 
     private void toggleInventoryScreen() {

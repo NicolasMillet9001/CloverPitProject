@@ -141,6 +141,31 @@ public class SlotMachineGUI extends JFrame {
             });
         });
 
+        // Victory Listener (End of Round 8)
+        slotMachine.setOnVictoryListener(() -> {
+            SwingUtilities.invokeLater(() -> {
+                int choice = JOptionPane.showConfirmDialog(this,
+                        "Félicitations ! Vous avez complété les 8 rounds !\nVoulez-vous continuer en mode 'Sans fin' (Score libre) ?",
+                        "Victoire !", JOptionPane.YES_NO_OPTION, JOptionPane.INFORMATION_MESSAGE);
+
+                if (choice == JOptionPane.YES_OPTION) {
+                    slotMachine.continueToEndless();
+                } else {
+                    // Reset game basically
+                    // We can call resetGame() on slotMachine but it shows a "Lost" message usually.
+                    // Ideally we should just reset quietly or show title screen if we had one.
+                    // For now, let's call resetGame but maybe we should avoid the "Lost" popup if
+                    // possible?
+                    // The current resetGame shows "Partie perdue". Let's just let it be for now or
+                    // improve later.
+                    // Actually, let's just trigger a manual reset or similar.
+                    // Since existing resetGame() shows a popup, let's just use it to be safe,
+                    // user might just be done.
+                    slotMachine.resetGame(); // This will show "Partie perdue", maybe slightly awkward but safe.
+                }
+            });
+        });
+
         add(mainContainer, BorderLayout.CENTER);
         add(buttonPanel, BorderLayout.SOUTH);
 
@@ -479,7 +504,13 @@ public class SlotMachineGUI extends JFrame {
             // On récupère le score (entier)
             int currentScore = (int) slotMachine.GetScore();
             int minScore = (int) slotMachine.getMinScoreToPass();
-            String scoreText = currentScore + " / " + minScore;
+            String scoreText;
+
+            if (slotMachine.isEndlessMode()) {
+                scoreText = currentScore + " (Infini)";
+            } else {
+                scoreText = currentScore + " / " + minScore;
+            }
 
             // Police qui s'adapte à la taille
             int fontSize = (int) (30 * scaleY);

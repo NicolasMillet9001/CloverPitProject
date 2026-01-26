@@ -82,8 +82,57 @@ public class SlotMachine {
 
     }
 
+    private boolean isEndlessMode = false;
+    private Runnable onVictoryListener;
+
+    public void setOnVictoryListener(Runnable listener) {
+        this.onVictoryListener = listener;
+    }
+
+    public boolean isEndlessMode() {
+        return isEndlessMode;
+    }
+
+    public void continueToEndless() {
+        this.isEndlessMode = true;
+        // Proceed to next round (which is technically round 9, but in endless)
+        // Note: startNewRound() increments round, but we just finished round 8.
+        // Usually checkRoundResult calls openShop, which eventually leads to
+        // startNewRound via GUI.
+        // So here we likely just want to open the shop to let the player buy stuff
+        // before Round 9.
+        openShop();
+    }
+
     private double calculateMinScoreForRound(int round) {
-        return 50 * round;
+        if (isEndlessMode) {
+            return 0;
+        }
+        // Round passed is 0-indexed (currentRound - 1)
+        // round 0 = Game Round 1
+        // round 1 = Game Round 2
+
+        switch (round + 1) { // Switch on 1-based round number
+            case 1:
+                return 0;
+            case 2:
+                return 50;
+            case 3:
+                return 100;
+            case 4:
+                return 200;
+            case 5:
+                return 350;
+            case 6:
+                return 700;
+            case 7:
+                return 1000;
+            case 8:
+                return 1500; // Updated per request: 1500 (2-3k?) -> picked 1500 for now based on prompt "8 :
+                             // 1500"
+            default:
+                return 0; // Should not happen if capped at 8, but safety
+        }
     }
 
     public void spin() {
@@ -269,22 +318,35 @@ public class SlotMachine {
     }
 
     private void checkRoundResult() {
-        if (score >= minScoreToPass) {
-            System.out.println("Round " + currentRound + " réussi ! Ouverture du shop...");
+        if (score >= minScoreToPass || isEndlessMode) {
+            System.out.println("Round " + currentRound + " réussi !");
             isFirstPurchaseMade = false; // Reset rule ONLY when winning a round
 
-            openShop();
+            // Check for Victory (End of Round 8, not yet in endless)
+            if (currentRound == 8 && !isEndlessMode) {
+                if (onVictoryListener != null) {
+                    onVictoryListener.run();
+                } else {
+                    // If no listener (shouldn't happen), just default to endless?
+                    // Or force reset? Let's just open shop to be safe
+                    continueToEndless();
+                }
+            } else {
+                openShop();
+            }
+
         } else {
             System.out.println("Round " + currentRound + " échoué ! La partie est perdue.");
             resetGame();
         }
     }
 
-    private void resetGame() {
+    public void resetGame() {
         this.currentRound = 1;
         this.maxSpinsPerRound = 10; // Reset max spins
         this.spinsLeft = maxSpinsPerRound;
         this.score = 0;
+        this.isEndlessMode = false;
         this.minScoreToPass = calculateMinScoreForRound(currentRound - 1);
 
         // Reload Items to reset prices

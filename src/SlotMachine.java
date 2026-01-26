@@ -362,6 +362,10 @@ public class SlotMachine {
         allItems = ItemLoader.loadItems();
         currentShopItems = new ArrayList<>(); // Clear current shop items just in case
 
+        // Reset Static Data (Symbols & Patterns)
+        Symbol.Reset();
+        Pattern.Reset();
+
         // Clear inventory and shop history
         inventory.clear();
         soldIndices.clear();

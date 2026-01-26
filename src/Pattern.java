@@ -86,4 +86,17 @@ public class Pattern {
     public static void AddGlobalMultiplier(double multiplier) {
         PatternGlobalMultiplier += multiplier;
     }
+
+    public static void Reset() {
+        horizontal3mult = 1;
+        vertical3mult = 1;
+        diagonalmult = 1;
+        horizontal4mult = 2;
+        horizontal5mult = 3;
+        zigzagmult = 4;
+        trianglemult = 7;
+        jackpotmult = 10;
+
+        PatternGlobalMultiplier = 1;
+    }
 }

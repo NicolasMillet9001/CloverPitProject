@@ -227,4 +227,24 @@ public class Symbol {
         // 5. Set target finally
         SetChance(targetSymbol, newTargetChance);
     }
+
+    public static void Reset() {
+        CitronChance = 19.4;
+        CeriseChance = 19.4;
+        TrefleChance = 14.9;
+        ClocheChance = 14.9;
+        DiamantChance = 11.9;
+        CoffreChance = 11.9;
+        SeptChance = 7.5;
+
+        CitronValue = 2;
+        CeriseValue = 2;
+        TrefleValue = 3;
+        ClocheValue = 3;
+        DiamantValue = 5;
+        CoffreValue = 5;
+        SeptValue = 7;
+
+        SymbolGlobalValueMultiplier = 1;
+    }
 }

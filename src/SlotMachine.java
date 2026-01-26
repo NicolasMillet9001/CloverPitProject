@@ -7,7 +7,7 @@ public class SlotMachine {
 
     private Symbol[][] Symbols = new Symbol[3][5];
     private boolean[][] winningCells = new boolean[3][5];
-    private double score = 0;
+    private double score = 1500;
     private int maxSpinsPerRound = 10;
     private int spinsLeft;
     private int currentRound = 1;
@@ -105,13 +105,10 @@ public class SlotMachine {
     }
 
     private double calculateMinScoreForRound(int round) {
-        if (isEndlessMode) {
-            return 0;
-        }
         // Round passed is 0-indexed (currentRound - 1)
         // round 0 = Game Round 1
-        // round 1 = Game Round 2
 
+        // Fixed rounds 1-8
         switch (round + 1) { // Switch on 1-based round number
             case 1:
                 return 0;
@@ -128,11 +125,19 @@ public class SlotMachine {
             case 7:
                 return 1000;
             case 8:
-                return 1500; // Updated per request: 1500 (2-3k?) -> picked 1500 for now based on prompt "8 :
-                             // 1500"
-            default:
-                return 0; // Should not happen if capped at 8, but safety
+                return 1500;
         }
+
+        // Endless Mode (Round 9+)
+        // Round 9 (round index 8) should be 3000 (1500 * 2)
+        // Formula: 1500 * 2^(roundIndex - 7)
+        // round 8: 1500 * 2^(1) = 3000
+        // round 9: 1500 * 2^(2) = 6000
+        if (round >= 8) {
+            return 1500 * Math.pow(2, round - 7);
+        }
+
+        return 0;
     }
 
     public void spin() {
@@ -318,7 +323,7 @@ public class SlotMachine {
     }
 
     private void checkRoundResult() {
-        if (score >= minScoreToPass || isEndlessMode) {
+        if (score >= minScoreToPass) {
             System.out.println("Round " + currentRound + " réussi !");
             isFirstPurchaseMade = false; // Reset rule ONLY when winning a round
 

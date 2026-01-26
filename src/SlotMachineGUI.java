@@ -504,13 +504,7 @@ public class SlotMachineGUI extends JFrame {
             // On récupère le score (entier)
             int currentScore = (int) slotMachine.GetScore();
             int minScore = (int) slotMachine.getMinScoreToPass();
-            String scoreText;
-
-            if (slotMachine.isEndlessMode()) {
-                scoreText = currentScore + " (Infini)";
-            } else {
-                scoreText = currentScore + " / " + minScore;
-            }
+            String scoreText = currentScore + " / " + minScore;
 
             // Police qui s'adapte à la taille
             int fontSize = (int) (30 * scaleY);

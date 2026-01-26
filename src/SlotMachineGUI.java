@@ -386,7 +386,7 @@ public class SlotMachineGUI extends JFrame {
 
     private void updateAnimation() {
         long currentTime = System.currentTimeMillis();
-        if (currentTime - spinStartTime < 1000) {
+        if (currentTime - spinStartTime < 750) {
             for (int i = 0; i < 3; i++) {
                 for (int j = 0; j < 5; j++) {
                     tempGrid[i][j] = new Symbol();

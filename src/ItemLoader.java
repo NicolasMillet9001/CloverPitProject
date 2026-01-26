@@ -172,7 +172,8 @@ public class ItemLoader {
                 path = "/medias/symbols_shop/PatternJackpot.png";
             else
                 path = "/medias/symbols_shop/PatternEye.png";
-        }
+        } else if (mainTarget.contains("MaxSpins"))
+            path = "/medias/symbols_shop/+1.png";
 
         item.setImagePath(path);
     }
